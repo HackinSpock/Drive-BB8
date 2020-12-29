@@ -27,8 +27,8 @@ class DomeMovement {
            this->domeSpinPotPin = domeSpinPotPin;
             
             // center dome (X,Y)
-            pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER)
-            pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER)
+            pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
+            pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
             
             // center dome spin servo        
        }
