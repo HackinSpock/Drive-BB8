@@ -34,8 +34,7 @@ class IMU {
         */
 
        void setup(HardwareSerial* serial, long baud_rate) {
-           s = serial;
-           s->begin(baud_rate);
+           serial->begin(baud_rate);
            bno.setExtCrystalUse(true);
        }
 
@@ -56,8 +55,6 @@ class IMU {
         uint16_t BNO055_SAMPLERATE_DELAY_MS = 10; //how often to read data from the board
 
         Adafruit_BNO055 bno = Adafruit_BNO055(55);
-
-        
 
         void IMUtimeout() {
             if(!bno.begin())
