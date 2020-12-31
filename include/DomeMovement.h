@@ -53,9 +53,10 @@ class DomeMovement {
 
         void setDomeXY(int16_t pitch, int16_t roll) 
         {   
-            this->receivedPitch = pitch;
-            targetPitch = constrain(pitch, PITCH_FRONT, PITCH_BACK);
-            targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
+            //this->receivedPitch = pitch; Look at raw pitch value for testing
+            //this->receivedRoll = roll; Look at raw roll value for testing
+            targetPitch = map(pitch, 992, 2003, PITCH_BACK, PITCH_FRONT);
+            targetRoll = map(roll, 994, 2003, ROLL_LEFT, ROLL_RIGHT);
         }
 
         void setDomePosition(int16_t x)
@@ -71,10 +72,10 @@ class DomeMovement {
         {
             // pwm.setPWM(domePitchPin, 0, targetPitch);
             // pwm.setPWM(domeRollPin, 0, targetRoll);
-            // Serial.println(this->targetPitch);
+            Serial.println(this->targetPitch);
             // Serial.println(this->targetRoll); 
 
-            Serial.println(this->receivedPitch);
+            //Serial.println(receivedPitch);
             delay(100);
 
         }
@@ -89,6 +90,7 @@ class DomeMovement {
         unsigned long previousMillis = 0; // used to determine if loop should run
 
         uint8_t receivedPitch;
+        uint8_t receivedRoll;
 
         uint8_t domePitchPin;
         uint8_t domeRollPin;

@@ -23,6 +23,10 @@ void setup()
 
     controller->setup(&droid);
 
+    pinMode(5, INPUT);
+    pinMode(6, INPUT);
+    pinMode(7, INPUT);
+
     // droid.drive.setup(
     //     &droid.imu,
     //     MAIN_DRIVE_NUM,
