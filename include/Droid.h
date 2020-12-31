@@ -13,9 +13,9 @@
 class Droid {
     public:
         DomeMovement dome;
-        Drive drive;
-        IMU imu;
-        SoundFX sfx;
+        // Drive drive;
+        // IMU imu;
+        // SoundFX sfx;
 
         void task() {
             //imu.task();

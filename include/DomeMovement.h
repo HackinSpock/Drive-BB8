@@ -11,9 +11,84 @@
 //#define DEBUG_DOME_MOVEMENT
 
 class DomeMovement {
-
     public:
+        DomeMovement() {}
+        ~DomeMovement() {;}
+        Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+        
+
+        /**
+         * Setup the class.
+        */
+       void setup(uint8_t domePitchPin, uint8_t domeRollPin, uint8_t domeSpinPin, uint8_t domeSpinPotPin) 
+       {
+           this->domePitchPin = domePitchPin;
+           this->domeRollPin = domeRollPin;
+           this->domeSpinPin = domeSpinPin;
+           this->domeSpinPotPin = domeSpinPotPin;
+            
+            // center dome (X,Y)
+            pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
+            pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
+            
+            // center dome spin servo        
+       }
+
+       /**
+        * Repeatably call this method to enable dome movement.
+        */
+       void task() 
+       {   
+           pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
+           unsigned long currentMillis = millis();
+           if(currentMillis - previousMillis >= DOME_TASK_INTERVAL) {
+                previousMillis = currentMillis;
+
+                //domeSpinPotPos = analogRead(domeSpinPotPin);
+
+                move();
+                //spin();
+           }
+        }
+
+        void setDomeXY(int16_t pitch, int16_t roll) 
+        {   
+            this->receivedPitch = pitch;
+            targetPitch = constrain(pitch, PITCH_FRONT, PITCH_BACK);
+            targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
+        }
+
+        void setDomePosition(int16_t x)
+        {
+            targetSpin = constrain(x, 0, 1023);
+        }
+
+        float getDomeSpinPosition() {
+            return domeSpinPotPos;
+        }
+
+        void move()
+        {
+            // pwm.setPWM(domePitchPin, 0, targetPitch);
+            // pwm.setPWM(domeRollPin, 0, targetRoll);
+            // Serial.println(this->targetPitch);
+            // Serial.println(this->targetRoll); 
+
+            Serial.println(this->receivedPitch);
+            delay(100);
+
+        }
+
+        void spin()
+        {
+            pwm.setPWM(domeSpinPin, 0, targetSpin);
+        }
+
+
+    private:
         unsigned long previousMillis = 0; // used to determine if loop should run
+
+        uint8_t receivedPitch;
 
         uint8_t domePitchPin;
         uint8_t domeRollPin;
@@ -49,76 +124,6 @@ class DomeMovement {
         #endif
         #ifdef DOME_TILT_ROLL_RIGHT
             int16_t ROLL_RIGHT = DOME_TILT_ROLL_RIGHT;
-        #endif
-
-        DomeMovement() {}
-        ~DomeMovement() {;}
-        Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
-        pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
-
-        /**
-         * Setup the class.
-        */
-       void setup(uint8_t domePitchPin, uint8_t domeRollPin, uint8_t domeSpinPin, uint8_t domeSpinPotPin) 
-       {
-           this->domePitchPin = domePitchPin;
-           this->domeRollPin = domeRollPin;
-           this->domeSpinPin = domeSpinPin;
-           this->domeSpinPotPin = domeSpinPotPin;
-            
-            // center dome (X,Y)
-            pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
-            pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
-            
-            // center dome spin servo        
-       }
-
-       /**
-        * Repeatably call this method to enable dome movement.
-        */
-       void task() 
-       {
-           unsigned long currentMillis = millis();
-           if(currentMillis - previousMillis >= DOME_TASK_INTERVAL) {
-                previousMillis = currentMillis;
-
-                domeSpinPotPos = analogRead(domeSpinPotPin);
-
-                move();
-                spin();
-           }
-        }
-
-        void setDomeXY(int16_t pitch, int16_t roll) 
-        {
-            targetPitch = constrain(pitch, PITCH_FRONT, PITCH_BACK);
-            targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
-        }
-
-        void setDomePosition(int16_t x)
-        {
-            targetSpin = constrain(x, 0, 1023);
-        }
-
-        float getDomeSpinPosition() {
-            return domeSpinPotPos;
-        }
-
-         void move()
-        {
-            pwm.setPWM(domePitchPin, 0,targetPitch);
-            pwm.setPWM(domeRollPin, 0, targetRoll);
-        }
-
-        void spin()
-        {
-            pwm.setPWM(domeSpinPin, 0, targetSpin);
-        }
-    } // end to public
-
-    //     private:
-        
-    // } // end of private  
-     
+        #endif 
 };
 #endif //DomeMovement_H_

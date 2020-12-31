@@ -1,17 +1,18 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
-#include "BBConfig.h"
+#include "BB8Config.h"
 #include "Droid.h"
+#include "RCTransmitter.h"
 
 //#define DEBUG_CONTROL
 
 Droid droid = Droid();
+Controller* controller = new RCTransmitter();
 
 void setup()
 {
-    Serial.begin(115200);
-    Log.notice(F("BB8 Drive Control Started...\n"));
+    //Log.notice(F("BB8 Drive Control Started...\n"));
 
     droid.dome.setup(
         DOME_PITCH_SERVO_PIN, 
@@ -20,21 +21,25 @@ void setup()
         DOME_SPIN_POT_PIN
     );
 
-    droid.drive.setup(
-        &droid.imu,
-        MAIN_DRIVE_NUM,
-        FLYWHEEL_NUM,
-        DRIVE_LEAN_SERVO_PIN
-    );
+    controller->setup(&droid);
 
-    droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
+    // droid.drive.setup(
+    //     &droid.imu,
+    //     MAIN_DRIVE_NUM,
+    //     FLYWHEEL_NUM,
+    //     DRIVE_LEAN_SERVO_PIN
+    // );
 
+    //droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
 
+    //Log.notice(F("BB8 Drive Ready...\n"));
 
-    Log.notice(F("BB8 Drive Ready...\n"));
+    Serial.begin(115200);
 }
 
 void loop()
-{
+{   
+    controller->task();
     droid.task();
+    delay(500);
 }

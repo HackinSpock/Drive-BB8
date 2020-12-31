@@ -43,14 +43,14 @@ class IMU {
         */
 
        void task(){
-           if(millis() - lastReceivedMillis >= 10){
+           if((millis() - lastRecievedMillis) >= 10){
                 sensors_event_t event; 
                 bno.getEvent(&event);
            }
            IMUtimeout();
        }
 
-       private:
+    private:
         unsigned long lastRecievedMillis;
         uint16_t BNO055_SAMPLERATE_DELAY_MS = 10; //how often to read data from the board
 
