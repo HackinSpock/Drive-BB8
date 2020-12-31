@@ -14,8 +14,6 @@ class DomeMovement {
     public:
         DomeMovement() {}
         ~DomeMovement() {;}
-        Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
-        
 
         /**
          * Setup the class.
@@ -26,6 +24,9 @@ class DomeMovement {
            this->domeRollPin = domeRollPin;
            this->domeSpinPin = domeSpinPin;
            this->domeSpinPotPin = domeSpinPotPin;
+
+            pwm.begin();
+            pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
             
             // center dome (X,Y)
             pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
@@ -39,7 +40,6 @@ class DomeMovement {
         */
        void task() 
        {   
-           pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
            unsigned long currentMillis = millis();
            if(currentMillis - previousMillis >= DOME_TASK_INTERVAL) {
                 previousMillis = currentMillis;
@@ -70,12 +70,14 @@ class DomeMovement {
 
         void move()
         {
-            // pwm.setPWM(domePitchPin, 0, targetPitch);
-            // pwm.setPWM(domeRollPin, 0, targetRoll);
-            Serial.println(this->targetPitch);
-            // Serial.println(this->targetRoll); 
+            pwm.setPWM(domePitchPin, 0, targetPitch);
+            pwm.setPWM(domeRollPin, 0, targetRoll);
+            //Serial.println(this->targetPitch);
+            //Serial.println(this->targetRoll); 
 
+            // VIEW RAW PITCH & ROLL VALUES
             //Serial.println(receivedPitch);
+            //Serial.println(receivedRoll);
             delay(100);
 
         }
@@ -87,6 +89,7 @@ class DomeMovement {
 
 
     private:
+        Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
         unsigned long previousMillis = 0; // used to determine if loop should run
 
         uint8_t receivedPitch;

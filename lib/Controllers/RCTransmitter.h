@@ -11,6 +11,9 @@ class RCTransmitter: public Controller {
   public:
     void setup(Droid* droid) override {
         this->droid = droid;
+        pinMode(5, INPUT);
+        pinMode(6, INPUT);
+        pinMode(7, INPUT);
     }
 
     void task() override {
