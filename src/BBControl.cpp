@@ -41,5 +41,5 @@ void loop()
 {   
     controller->task();
     droid.task();
-    delay(500);
+    
 }

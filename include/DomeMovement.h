@@ -53,15 +53,15 @@ class DomeMovement {
 
         void setDomeXY(int16_t pitch, int16_t roll) 
         {   
-            //this->receivedPitch = pitch; Look at raw pitch value for testing
-            //this->receivedRoll = roll; Look at raw roll value for testing
+            //this->receivedPitch = pitch; // Look at raw pitch value for testing
+            //this->receivedRoll = roll; // Look at raw roll value for testing
             targetPitch = map(pitch, 992, 2003, PITCH_BACK, PITCH_FRONT);
-            targetRoll = map(roll, 994, 2003, ROLL_LEFT, ROLL_RIGHT);
+            //targetRoll = map(roll, 994, 2003, ROLL_LEFT, ROLL_RIGHT);
         }
 
         void setDomePosition(int16_t x)
         {
-            targetSpin = constrain(x, 0, 1023);
+            targetSpin = map(x, 2412, 1100, 0, 1023);
         }
 
         float getDomeSpinPosition() {
@@ -69,22 +69,31 @@ class DomeMovement {
         }
 
         void move()
-        {
+        {   
+            // USE MAPPED PITCH & ROLL VALUES 
             pwm.setPWM(domePitchPin, 0, targetPitch);
-            pwm.setPWM(domeRollPin, 0, targetRoll);
+            //pwm.setPWM(domeRollPin, 0, targetRoll);
+
+            // VIEW MAPPED PITCH & ROLL VALUES
             //Serial.println(this->targetPitch);
             //Serial.println(this->targetRoll); 
 
             // VIEW RAW PITCH & ROLL VALUES
             //Serial.println(receivedPitch);
             //Serial.println(receivedRoll);
-            delay(100);
+            delay(15);
 
         }
 
         void spin()
         {
-            pwm.setPWM(domeSpinPin, 0, targetSpin);
+            //pwm.setPWM(domeSpinPin, 0, this->targetSpin);
+
+            // VIEW MAPPED SPIN VALUE
+            //Serial.println(this->targetSpin);
+
+            // VIEW RAW SPIN VALUE
+            //Serial.println(receivedSpin);
         }
 
 
@@ -94,6 +103,7 @@ class DomeMovement {
 
         uint8_t receivedPitch;
         uint8_t receivedRoll;
+        uint8_t receivedSpin;
 
         uint8_t domePitchPin;
         uint8_t domeRollPin;

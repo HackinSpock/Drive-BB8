@@ -73,7 +73,7 @@ class RCTransmitter: public Controller {
     {
         domePitch = pulseIn(5, HIGH, 25000);
         domeRoll = pulseIn(6, HIGH, 25000);
-        //domeSpin = pulseIn(7, HIGH, 25000);
+        domeSpin = pulseIn(7, HIGH, 25000);
 
         //droid->dome.setDomePosition(domeSpin); // inputs left joystick potentionmeter data for dome spin
         droid->dome.setDomeXY(domePitch, domeRoll); // inputs from left joystick pitch and roll for dome pitch and roll
