@@ -4,7 +4,8 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
 #include <Wire.h>
-#include <Adafruit_PWMServoDriver.h>
+//#include <Adafruit_PWMServoDriver.h>
+#include "ServoEasing.h"
 
 #define DOME_TASK_INTERVAL 25 // in millis
 
@@ -25,12 +26,22 @@ class DomeMovement {
            this->domeSpinPin = domeSpinPin;
            this->domeSpinPotPin = domeSpinPotPin;
 
-            pwm.begin();
-            pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
+           Wire.begin(); // Starts with 100 kHz. Clock will eventually be increased at first attach() except for ESP32.
+           Wire.beginTransmission(PCA9685_DEFAULT_ADDRESS);
+
+           pitchServo.attach(domePitchPin);
+           rollServo.attach(domeRollPin);
+
+
+            //pwm.begin(); // Enable pwm board
+            //pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
             
             // center dome (X,Y)
-            pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
-            pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
+            //pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
+            //pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
+            pitchServo.startEaseTo(this->PITCH_CENTER, 30); // Move to center with 30 degree per second using interrupts
+            rollServo.startEaseTo(this->ROLL_CENTER, 30);
+            delay(500); // Wait for servos to reach start position
             
             // center dome spin servo        
        }
@@ -71,8 +82,12 @@ class DomeMovement {
         void move()
         {   
             // USE MAPPED PITCH & ROLL VALUES 
-            pwm.setPWM(domePitchPin, 0, targetPitch);
+            //pwm.setPWM(domePitchPin, 0, targetPitch);
             //pwm.setPWM(domeRollPin, 0, targetRoll);
+
+            pitchServo.startEaseTo(targetPitch, 30, true); // Move to center with 30 degree per second using interrupts
+            rollServo.startEaseTo(targetRoll, 30);
+
 
             // VIEW MAPPED PITCH & ROLL VALUES
             //Serial.println(this->targetPitch);
@@ -98,8 +113,13 @@ class DomeMovement {
 
 
     private:
-        Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
+        #define ENABLE_MICROS_AS_DEGREE_PARAMETER
+        //Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
         unsigned long previousMillis = 0; // used to determine if loop should run
+
+        ServoEasing pitchServo(PCA9685_DEFAULT_ADDRESS, &Wire);
+        ServoEasing rollServo(PCA9685_DEFAULT_ADDRESS, &Wire);
+        //ServoEasing spinServo(PCA9685_DEFAULT_ADDRESS, &Wire);
 
         uint8_t receivedPitch;
         uint8_t receivedRoll;
