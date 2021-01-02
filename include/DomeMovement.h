@@ -85,7 +85,7 @@ class DomeMovement {
             //pwm.setPWM(domePitchPin, 0, targetPitch);
             //pwm.setPWM(domeRollPin, 0, targetRoll);
 
-            pitchServo.startEaseTo(targetPitch, 30, true); // Move to center with 30 degree per second using interrupts
+            pitchServo.startEaseTo(targetPitch, 30); // Move to center with 30 degree per second using interrupts
             rollServo.startEaseTo(targetRoll, 30);
 
 
