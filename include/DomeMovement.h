@@ -29,8 +29,8 @@ class DomeMovement {
            Wire.begin(); // Starts with 100 kHz. Clock will eventually be increased at first attach() except for ESP32.
            Wire.beginTransmission(PCA9685_DEFAULT_ADDRESS);
 
-           pitchServo.attach(domePitchPin);
-           rollServo.attach(domeRollPin);
+           pitchServo.attach(domePitchPin, 2500, 1100);
+           rollServo.attach(domeRollPin, 2400, 1100);
 
         //    pitchServo.setEasingType(EASE_CUBIC_IN_OUT);
         //    rollServo.setEasingType(EASE_CUBIC_IN_OUT);
@@ -87,16 +87,16 @@ class DomeMovement {
             //pwm.setPWM(domePitchPin, 0, targetPitch);
             //pwm.setPWM(domeRollPin, 0, targetRoll);
 
-            pitchServo.startEaseTo(600, 3000);
+            pitchServo.startEaseTo(2500, 3000);
             delay(2000);
 
-            pitchServo.startEaseTo(2000, 3000);
+            pitchServo.startEaseTo(1100, 3000);
             delay(2000);
 
-            pitchServo.startEaseTo(1000, 3000);
+            pitchServo.startEaseTo(2500, 3000);
             delay(2000);
 
-            pitchServo.startEaseTo(2000, 3000);
+            pitchServo.startEaseTo(1100, 3000);
             delay(2000);
 
 
