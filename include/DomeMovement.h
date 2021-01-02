@@ -29,6 +29,8 @@ class DomeMovement {
            Wire.begin(); // Starts with 100 kHz. Clock will eventually be increased at first attach() except for ESP32.
            Wire.beginTransmission(PCA9685_DEFAULT_ADDRESS);
 
+           
+
            pitchServo.attach(domePitchPin);
            rollServo.attach(domeRollPin);
 
@@ -117,8 +119,11 @@ class DomeMovement {
         //Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
         unsigned long previousMillis = 0; // used to determine if loop should run
 
-        ServoEasing pitchServo(PCA9685_DEFAULT_ADDRESS, &Wire);
-        ServoEasing rollServo(PCA9685_DEFAULT_ADDRESS, &Wire);
+        ServoEasing pitchServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
+        ServoEasing rollServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
+
+        //ServoEasing pitchServo(PCA9685_DEFAULT_ADDRESS, &Wire);
+        //ServoEasing rollServo(PCA9685_DEFAULT_ADDRESS, &Wire);
         //ServoEasing spinServo(PCA9685_DEFAULT_ADDRESS, &Wire);
 
         uint8_t receivedPitch;
