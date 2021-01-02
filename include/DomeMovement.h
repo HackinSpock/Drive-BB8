@@ -41,8 +41,8 @@ class DomeMovement {
             // center dome (X,Y)
             //pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
             //pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
-            pitchServo.write(this->PITCH_CENTER); // Move to center with 30 degree per second using interrupts
-            rollServo.write(this->ROLL_CENTER);
+            // pitchServo.write(this->PITCH_CENTER); // Move to center with 30 degree per second using interrupts
+            // rollServo.write(this->ROLL_CENTER);
             delay(500); // Wait for servos to reach start position
             
             // center dome spin servo        
@@ -87,8 +87,17 @@ class DomeMovement {
             //pwm.setPWM(domePitchPin, 0, targetPitch);
             //pwm.setPWM(domeRollPin, 0, targetRoll);
 
-            pitchServo.startEaseTo(0, 3000); // Move to center with 30 degree per second using interrupts
-            rollServo.startEaseTo(0, 3000);
+            pitchServo.startEaseTo(600, 3000);
+            delay(2000);
+
+            pitchServo.startEaseTo(2000, 3000);
+            delay(2000);
+
+            pitchServo.startEaseTo(1000, 3000);
+            delay(2000);
+
+            pitchServo.startEaseTo(2000, 3000);
+            delay(2000);
 
 
             // VIEW MAPPED PITCH & ROLL VALUES
@@ -98,8 +107,7 @@ class DomeMovement {
             // VIEW RAW PITCH & ROLL VALUES
             //Serial.println(receivedPitch);
             //Serial.println(receivedRoll);
-            delay(15);
-
+            //delay(15);
         }
 
         void spin()
@@ -115,7 +123,6 @@ class DomeMovement {
 
 
     private:
-        //#define ENABLE_MICROS_AS_DEGREE_PARAMETER
         //Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
         unsigned long previousMillis = 0; // used to determine if loop should run
 
