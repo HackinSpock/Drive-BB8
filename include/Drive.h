@@ -32,6 +32,9 @@ class Drive {
             // lean
             this->leanServoPin = leanServoPin;
 
+            dome->pwm.begin(); // Enable pwm board
+            dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
+
             //center lean
             dome->pwm.setPWM(this->flywheelPin, 0, LEAN_CENTER);
         }
@@ -48,7 +51,7 @@ class Drive {
 
         void setTilt(int16_t x) 
         {   
-            this->rawLean = x;
+            //this->rawLean = x;
             this->targetLean = map(x, 1108, 2003, LEAN_LEFT, LEAN_RIGHT);
         }
 
@@ -98,13 +101,13 @@ class Drive {
 
             void tilt() // drive body roll servo
             { 
-                //dome->pwm.setPWM(this->leanServoPin, 0, targetLean);
+                dome->pwm.setPWM(this->leanServoPin, 0, targetLean);
 
                 // VIEW MAPPED PITCH & ROLL VALUES
                 //Serial.println(this->targetLean);
 
                 // VIEW RAW PITCH & ROLL VALUES
-                Serial.println(rawLean);
+                //Serial.println(rawLean);
                 //delay(15);
             }
 

@@ -19,7 +19,7 @@ class Droid {
 
         void task() {
             //imu.task();
-            //dome.task();
+            dome.task();
             drive.task();
             //sfx.task();
         }

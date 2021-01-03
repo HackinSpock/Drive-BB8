@@ -14,12 +14,12 @@ void setup()
 {
     //Log.notice(F("BB8 Drive Control Started...\n"));
 
-    // droid.dome.setup(
-    //     DOME_PITCH_SERVO_PIN, 
-    //     DOME_ROLL_SERVO_PIN, 
-    //     DOME_SPIN_SERVO_PIN, 
-    //     DOME_SPIN_POT_PIN
-    // );
+    droid.dome.setup(
+        DOME_PITCH_SERVO_PIN, 
+        DOME_ROLL_SERVO_PIN, 
+        DOME_SPIN_SERVO_PIN, 
+        DOME_SPIN_POT_PIN
+    );
 
     controller->setup(&droid);
 
@@ -36,7 +36,6 @@ void setup()
     //Log.notice(F("BB8 Drive Ready...\n"));
 
     Serial.begin(115200);
-    Serial.println("Hello World");
 
 }
 
@@ -44,5 +43,4 @@ void loop()
 {   
     controller->task();
     droid.task();
-    
 }
