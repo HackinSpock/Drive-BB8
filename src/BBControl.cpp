@@ -26,8 +26,6 @@ void setup()
     // add &droid.imu, as second parameter once fixed
     droid.drive.setup(
         &droid.dome,
-        MAIN_DRIVE_NUM,
-        FLYWHEEL_NUM,
         DRIVE_LEAN_SERVO_PIN
     );
 

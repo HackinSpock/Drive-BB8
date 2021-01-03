@@ -21,14 +21,11 @@ class Drive {
         ~Drive() {;}
        
         // add  IMU* imu, once fixed later
-        void setup(DomeMovement* dome, uint8_t drivePin, uint8_t flywheelPin, uint8_t leanServoPin) 
+        void setup(DomeMovement* dome, uint8_t leanServoPin) 
         {   
             this->dome = dome;
             //this->imu = imu;
 
-            // drive & flywheel
-            this->drivePin = drivePin;
-            this->flywheelPin = flywheelPin;
             // lean
             this->leanServoPin = leanServoPin;
 
@@ -39,7 +36,7 @@ class Drive {
             dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
 
             //center lean
-            dome->pwm.setPWM(this->flywheelPin, 0, LEAN_CENTER);
+            dome->pwm.setPWM(this->leanServoPin, 0, LEAN_CENTER);
             delay(1000); // wait for adjustment
         }
         
@@ -63,7 +60,7 @@ class Drive {
         {
             unsigned long currentMillis = millis();
             if (currentMillis - previousMillis >= _DRIVE_TASK_INTERVAL) {
-                //drive();
+                drive();
                 //flywheel();
                 tilt();
             }
@@ -117,8 +114,6 @@ class Drive {
 
         private:
             unsigned long previousMillis = 0; // Used to determine if loop should run
-            uint8_t drivePin; 
-            uint8_t flywheelPin;
             uint8_t leanServoPin;
 
             int16_t targetDriveSpeed = 0;
@@ -128,7 +123,7 @@ class Drive {
             
             IMU* imu;
             DomeMovement* dome;
-            SoftwareSerial SWSerial = SoftwareSerial(NOT_A_PIN, 11); // RX on no pin (unused), TX on pin 11 (to S1).
+            SoftwareSerial SWSerial = SoftwareSerial(12, 11); // RX on no pin (unused), TX on pin 11 (to S2).
             Sabertooth ST = Sabertooth(128, SWSerial); // Address 128, and use SWSerial as the serial port.
 
             bool enabled = false;
