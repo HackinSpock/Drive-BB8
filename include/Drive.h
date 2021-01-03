@@ -32,21 +32,25 @@ class Drive {
             // lean
             this->leanServoPin = leanServoPin;
 
+            SWSerial.begin(9600);
+            ST.autobaud();
+
             dome->pwm.begin(); // Enable pwm board
             dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
 
             //center lean
             dome->pwm.setPWM(this->flywheelPin, 0, LEAN_CENTER);
+            delay(1000); // wait for adjustment
         }
         
         void setDriveSpeed(int16_t speed) 
         {
-            this->targetDriveSpeed = map(speed, 992, 2003, -255, 255);
+            this->targetDriveSpeed = map(speed, 990, 2003, -127, 127);
         }
 
         void setFlywheelSpeed(int16_t speed) 
         {
-             this->targetFlywheelSpeed = map(speed, 0, 1023, -255, 255);
+             this->targetFlywheelSpeed = map(speed, 0, 1023, -127, 127);
         }
 
         void setTilt(int16_t x) 

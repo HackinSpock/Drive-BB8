@@ -41,8 +41,8 @@ class DomeMovement {
             pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
             
             // center dome (X,Y)
-            pwm.setPWM(this->domePitchPin, 0, this->PITCH_CENTER);
-            pwm.setPWM(this->domeRollPin, 0, this->ROLL_CENTER);
+            pwm.setPWM(this->domePitchPin, 0, PITCH_CENTER);
+            pwm.setPWM(this->domeRollPin, 0, ROLL_CENTER);
             //pitchServo.write(0); // Move to center with 30 degree per second using interrupts
             //rollServo.write(0);
             delay(1000); // Wait for servos to reach start position
@@ -70,6 +70,7 @@ class DomeMovement {
         {   
             //this->receivedPitch = pitch; // Look at raw pitch value for testing
             //this->receivedRoll = roll; // Look at raw roll value for testing
+            
             targetPitch = map(pitch, 992, 2003, PITCH_BACK, PITCH_FRONT);
             targetRoll = map(roll, 994, 2003, ROLL_LEFT, ROLL_RIGHT);
         }
@@ -119,6 +120,8 @@ class DomeMovement {
         //ServoEasing pitchServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
         //ServoEasing rollServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
         //ServoEasing spinServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
+
+        //uint8_t deadzone = 10;
 
         uint8_t receivedPitch;
         uint8_t receivedRoll;
