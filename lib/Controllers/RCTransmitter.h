@@ -14,6 +14,8 @@ class RCTransmitter: public Controller {
         pinMode(5, INPUT);
         pinMode(6, INPUT);
         pinMode(7, INPUT);
+        pinMode(8, INPUT);
+        pinMode(9, INPUT);
     }
 
     void task() override {
@@ -74,9 +76,15 @@ class RCTransmitter: public Controller {
         domePitch = pulseIn(5, HIGH, 25000);
         domeRoll = pulseIn(6, HIGH, 25000);
         domeSpin = pulseIn(7, HIGH, 25000);
+        drive = pulseIn(8, HIGH, 25000);
+        lean = pulseIn(9, HIGH, 25000);
 
         //droid->dome.setDomePosition(domeSpin); // inputs left joystick potentionmeter data for dome spin
         droid->dome.setDomeXY(domePitch, domeRoll); // inputs from left joystick pitch and roll for dome pitch and roll
+
+        droid->drive.setDriveSpeed(drive); // inputs from right joystick pitch for body drive forward/reverse
+        droid->drive.setTilt(lean); // inputs from right joystick roll for drive lean
+
 
         // if(START == HIGH)
         // {

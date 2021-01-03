@@ -12,7 +12,7 @@
 
 class Droid {
     public:
-        //DomeMovement dome;
+        DomeMovement dome;
         Drive drive;
         // IMU imu;
         // SoundFX sfx;
