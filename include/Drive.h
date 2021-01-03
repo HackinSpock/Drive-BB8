@@ -25,6 +25,7 @@ class Drive {
         {   
             this->dome = dome;
             //this->imu = imu;
+
             // drive & flywheel
             this->drivePin = drivePin;
             this->flywheelPin = flywheelPin;
@@ -37,17 +38,18 @@ class Drive {
         
         void setDriveSpeed(int16_t speed) 
         {
-            this->targetDriveSpeed = constrain(speed, -255, 255);
+            this->targetDriveSpeed = map(speed, 992, 2003, -255, 255);
         }
 
         void setFlywheelSpeed(int16_t speed) 
         {
-             this->targetFlywheelSpeed = constrain(speed, -255, 255);
+             this->targetFlywheelSpeed = map(speed, 0, 1023, -255, 255);
         }
 
         void setTilt(int16_t x) 
-        {
-            targetLeanPosition = map(x, 994, 2003, LEAN_LEFT, LEAN_RIGHT);
+        {   
+            this->rawLean = x;
+            this->targetLean = map(x, 1108, 2003, LEAN_LEFT, LEAN_RIGHT);
         }
 
         void task() // Main loop
@@ -81,7 +83,7 @@ class Drive {
                 }
            }
 
-            void flywheel() 
+            void flywheel()  // Drives BB8 flywheel with pot
             {
                 if(targetFlywheelSpeed > 10) {
                     ST.motor(FLYWHEEL_NUMBER, this->targetFlywheelSpeed);
@@ -96,7 +98,14 @@ class Drive {
 
             void tilt() // drive body roll servo
             { 
-                dome->pwm.setPWM(this->leanServoPin, 0, targetLeanPosition);
+                //dome->pwm.setPWM(this->leanServoPin, 0, targetLean);
+
+                // VIEW MAPPED PITCH & ROLL VALUES
+                //Serial.println(this->targetLean);
+
+                // VIEW RAW PITCH & ROLL VALUES
+                Serial.println(rawLean);
+                //delay(15);
             }
 
         private:
@@ -107,7 +116,8 @@ class Drive {
 
             int16_t targetDriveSpeed = 0;
             int16_t targetFlywheelSpeed = 0;
-            int16_t targetLeanPosition = 0;
+            int16_t targetLean = 0;
+            int16_t rawLean = 0;
             
             IMU* imu;
             DomeMovement* dome;

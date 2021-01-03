@@ -36,6 +36,8 @@ void setup()
     //Log.notice(F("BB8 Drive Ready...\n"));
 
     Serial.begin(115200);
+    Serial.println("Hello World");
+
 }
 
 void loop()

@@ -82,7 +82,7 @@ class RCTransmitter: public Controller {
         //droid->dome.setDomePosition(domeSpin); // inputs left joystick potentionmeter data for dome spin
         droid->dome.setDomeXY(domePitch, domeRoll); // inputs from left joystick pitch and roll for dome pitch and roll
 
-        droid->drive.setDriveSpeed(drive); // inputs from right joystick pitch for body drive forward/reverse
+        //droid->drive.setDriveSpeed(drive); // inputs from right joystick pitch for body drive forward/reverse
         droid->drive.setTilt(lean); // inputs from right joystick roll for drive lean
 
 
