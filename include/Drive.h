@@ -47,15 +47,15 @@ class Drive {
 
         void setTilt(int16_t x) 
         {
-            this->targetLeanPosition = constrain(x, this->DRIVE_LEAN_LEFT, this->DRIVE_LEAN_RIGHT);
+            targetLeanPosition = map(x, 994, 2003, LEAN_LEFT, LEAN_RIGHT);
         }
 
-        void task() 
+        void task() // Main loop
         {
             unsigned long currentMillis = millis();
             if (currentMillis - previousMillis >= _DRIVE_TASK_INTERVAL) {
-                drive();
-                flywheel();
+                //drive();
+                //flywheel();
                 tilt();
             }
         }
@@ -67,6 +67,37 @@ class Drive {
         void setEnable(bool enabled) {
             this->enabled = enabled;
         }
+
+        void drive() // Drives the BB unit FWD and Reverse
+           { 
+                if(targetDriveSpeed > 10) {
+                    ST.motor(DRIVE_NUM, this->targetDriveSpeed);
+                }
+                else if(targetDriveSpeed < -10) {
+                    ST.motor(DRIVE_NUM, this->targetDriveSpeed);
+                }
+                else {
+                    ST.motor(DRIVE_NUM, 0);
+                }
+           }
+
+            void flywheel() 
+            {
+                if(targetFlywheelSpeed > 10) {
+                    ST.motor(FLYWHEEL_NUMBER, this->targetFlywheelSpeed);
+                }
+                else if(targetFlywheelSpeed < -10) {
+                    ST.motor(FLYWHEEL_NUMBER, this->targetFlywheelSpeed);
+                }
+                else {
+                    ST.motor(FLYWHEEL_NUMBER, 0);
+                }
+            }
+
+            void tilt() // drive body roll servo
+            { 
+                dome->pwm.setPWM(this->leanServoPin, 0, targetLeanPosition);
+            }
 
         private:
             unsigned long previousMillis = 0; // Used to determine if loop should run
@@ -85,37 +116,6 @@ class Drive {
 
             bool enabled = false;
 
-           void drive() // Drives the BB unit FWD and Reverse
-           { 
-                if(this->targetDriveSpeed > 10) {
-                    ST.motor(MAIN_DRIVE_NUM, this->targetDriveSpeed);
-                }
-                else if(this->targetDriveSpeed < -10) {
-                    ST.motor(MAIN_DRIVE_NUM, this->targetDriveSpeed);
-                }
-                else {
-                    ST.motor(MAIN_DRIVE_NUM, 0);
-                }
-           }
-
-            void flywheel() 
-            {
-                if(this->targetFlywheelSpeed > 10) {
-                    ST.motor(FLYWHEEL_NUM, this->targetFlywheelSpeed);
-                }
-                else if(this->targetFlywheelSpeed < -10) {
-                    ST.motor(FLYWHEEL_NUM, this->targetFlywheelSpeed);
-                }
-                else {
-                    ST.motor(FLYWHEEL_NUM, 0);
-                }
-            }
-
-            void tilt() // drive body roll servo
-            { 
-                dome->pwm.setPWM(this->leanServoPin, 0, targetLeanPosition);
-            }
-
             // Lean left, center, right values.
             #ifdef DRIVE_LEAN_LEFT
                 int16_t LEAN_LEFT = DRIVE_LEAN_LEFT;
@@ -126,5 +126,13 @@ class Drive {
             #ifdef DRIVE_LEAN_RIGHT
                 int16_t LEAN_RIGHT = DRIVE_LEAN_RIGHT;
             #endif 
+
+            #ifdef MAIN_DRIVE_NUM
+                int16_t DRIVE_NUM = MAIN_DRIVE_NUM;
+            #endif
+            #ifdef FLYWHEEL_NUM
+                int16_t FLYWHEEL_NUMBER = FLYWHEEL_NUM;
+            #endif
+
 };
 #endif
