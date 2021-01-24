@@ -29,9 +29,6 @@ class Drive {
             // lean
             this->leanServoPin = leanServoPin;
 
-            SWSerial.begin(9600);
-            ST.autobaud();
-
             dome->pwm.begin(); // Enable pwm board
             dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
 
@@ -41,19 +38,20 @@ class Drive {
         }
         
         void setDriveSpeed(int16_t speed) 
-        {
-            this->targetDriveSpeed = map(speed, 990, 2003, -127, 127);
+        {   
+            this->rawSpeed = speed;
+            targetDriveSpeed = map(speed, 172, 1811, -127, 127);
         }
 
         void setFlywheelSpeed(int16_t speed) 
         {
-             this->targetFlywheelSpeed = map(speed, 0, 1023, -127, 127);
+             this->targetFlywheelSpeed = map(speed, 172, 1810, -127, 127);
         }
 
         void setTilt(int16_t x) 
         {   
             //this->rawLean = x;
-            this->targetLean = map(x, 1108, 2003, LEAN_LEFT, LEAN_RIGHT);
+            this->targetLean = map(x, 172, 1811, LEAN_LEFT, LEAN_RIGHT);
         }
 
         void task() // Main loop
@@ -61,13 +59,10 @@ class Drive {
             unsigned long currentMillis = millis();
             if (currentMillis - previousMillis >= _DRIVE_TASK_INTERVAL) {
                 drive();
-                //flywheel();
                 tilt();
-            }
-        }
+                flywheel();
 
-        bool isEnabled() {
-            return this->enabled;
+            }
         }
 
         void setEnable(bool enabled) {
@@ -75,46 +70,58 @@ class Drive {
         }
 
         void drive() // Drives the BB unit FWD and Reverse
-           { 
-                if(targetDriveSpeed > 10) {
-                    ST.motor(DRIVE_NUM, this->targetDriveSpeed);
-                }
-                else if(targetDriveSpeed < -10) {
-                    ST.motor(DRIVE_NUM, this->targetDriveSpeed);
-                }
-                else {
-                    ST.motor(DRIVE_NUM, 0);
-                }
-           }
-
-            void flywheel()  // Drives BB8 flywheel with pot
+        { 
+            if(enabled == true)
             {
-                if(targetFlywheelSpeed > 10) {
-                    ST.motor(FLYWHEEL_NUMBER, this->targetFlywheelSpeed);
-                }
-                else if(targetFlywheelSpeed < -10) {
-                    ST.motor(FLYWHEEL_NUMBER, this->targetFlywheelSpeed);
+                if(targetDriveSpeed > -10 && targetDriveSpeed < 10){
+                    ST.motor(1, 0);
                 }
                 else {
-                    ST.motor(FLYWHEEL_NUMBER, 0);
+                    ST.motor(1, -targetDriveSpeed);
                 }
             }
-
-            void tilt() // drive body roll servo
-            { 
-                dome->pwm.setPWM(this->leanServoPin, 0, targetLean);
-
-                // VIEW MAPPED PITCH & ROLL VALUES
-                //Serial.println(this->targetLean);
-
-                // VIEW RAW PITCH & ROLL VALUES
-                //Serial.println(rawLean);
-                //delay(15);
+            else
+            {
+                ST.motor(1, 0);
             }
+            delay(100);
+
+        }
+        void flywheel()  // Drives BB8 flywheel with pot
+        {
+            if(enabled == true)
+            {
+                if(targetFlywheelSpeed > -10 && targetFlywheelSpeed < 10){
+                    ST.motor(2, 0);
+                }
+                else {
+                    ST.motor(2, -targetFlywheelSpeed);
+                }
+            }
+            else
+            {
+                ST.motor(2, 0);
+            }
+            delay(100);
+        }
+
+        void tilt() // drive body roll servo
+        { 
+            dome->pwm.setPWM(this->leanServoPin, 0, targetLean);
+
+            // VIEW MAPPED PITCH & ROLL VALUES
+            //Serial.println(this->targetLean);
+
+            // VIEW RAW PITCH & ROLL VALUES
+            //Serial.println(rawLean);
+            //delay(15);
+        }
 
         private:
             unsigned long previousMillis = 0; // Used to determine if loop should run
             uint8_t leanServoPin;
+
+            uint8_t rawSpeed;
 
             int16_t targetDriveSpeed = 0;
             int16_t targetFlywheelSpeed = 0;
@@ -123,8 +130,7 @@ class Drive {
             
             IMU* imu;
             DomeMovement* dome;
-            SoftwareSerial SWSerial = SoftwareSerial(12, 11); // RX on no pin (unused), TX on pin 11 (to S2).
-            Sabertooth ST = Sabertooth(128, SWSerial); // Address 128, and use SWSerial as the serial port.
+            Sabertooth ST = Sabertooth(128, Serial1); // Address 128, and use SWSerial as the serial port.
 
             bool enabled = false;
 

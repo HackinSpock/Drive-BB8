@@ -71,8 +71,9 @@ class DomeMovement {
             //this->receivedPitch = pitch; // Look at raw pitch value for testing
             //this->receivedRoll = roll; // Look at raw roll value for testing
             
-            targetPitch = map(pitch, 992, 2003, PITCH_BACK, PITCH_FRONT);
-            targetRoll = map(roll, 994, 2003, ROLL_LEFT, ROLL_RIGHT);
+            targetPitch = map(pitch, 172, 1811, PITCH_BACK, PITCH_FRONT);
+            targetRoll = map(roll, 172, 1811, ROLL_LEFT, ROLL_RIGHT);
+            
         }
 
         void setDomePosition(int16_t x)
