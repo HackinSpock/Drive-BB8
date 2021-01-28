@@ -45,7 +45,7 @@ class DomeMovement {
             pwm.setPWM(this->domeRollPin, 0, ROLL_CENTER);
             //pitchServo.write(0); // Move to center with 30 degree per second using interrupts
             //rollServo.write(0);
-            delay(1000); // Wait for servos to reach start position
+            //delay(1000); // Wait for servos to reach start position
             
             // center dome spin servo        
        }

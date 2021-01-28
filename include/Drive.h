@@ -34,7 +34,7 @@ class Drive {
 
             //center lean
             dome->pwm.setPWM(this->leanServoPin, 0, LEAN_CENTER);
-            delay(1000); // wait for adjustment
+            //delay(1000); // wait for adjustment
         }
         
         void setDriveSpeed(int16_t speed) 
@@ -61,7 +61,6 @@ class Drive {
                 drive();
                 tilt();
                 flywheel();
-
             }
         }
 
@@ -84,7 +83,7 @@ class Drive {
             {
                 ST.motor(1, 0);
             }
-            delay(100);
+            //delay(100);
 
         }
         void flywheel()  // Drives BB8 flywheel with pot
@@ -102,7 +101,7 @@ class Drive {
             {
                 ST.motor(2, 0);
             }
-            delay(100);
+            //delay(100);
         }
 
         void tilt() // drive body roll servo
