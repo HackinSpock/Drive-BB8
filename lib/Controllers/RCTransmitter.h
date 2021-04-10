@@ -50,7 +50,7 @@ class RCTransmitter: public Controller {
 
         if(x8r.read(&channels[0], &failSafe, &lostFrame)) 
         {
-          //droid->dome.setDomePosition(domeSpin); // inputs left joystick potentionmeter data for dome spin
+          droid->dome.setDomePosition(channels[4]); // inputs left joystick potentionmeter data for dome spin
           droid->dome.setDomeXY(channels[0], channels[1]); // inputs from left joystick pitch and roll for dome pitch and roll
 
           droid->drive.setDriveSpeed(channels[3]); // inputs from right joystick pitch for body drive forward/reverse
@@ -66,8 +66,37 @@ class RCTransmitter: public Controller {
         //   droid->drive.setFlywheelSpeed(0);
         //   droid->drive.setTilt(LEAN_CENTER);
         // }
+
+        if(channels[11] >= 1800) // if flip switch is clicked
+        {
+          // All possible mood types if switch 1/2 is forward, center or back
+          if(channels[9] <= 180)
+          {
+            droid->sfx.playTrack(4, 0, 9, true);
+          }
+          else if(channels[9] <= 1000 && channels[9] >= 985)
+          {
+            droid->sfx.playTrack(0, 0, 9, true);
+          }
+          else //if(channels[9] >= 1800)
+          {
+            droid->sfx.playTrack(6, 0, true);
+          }
+          // else if(channels[10] <= 180)
+          // {
+          //   droid->sfx.playTrack(5, 1, false);
+          // }
+          // else if(channels[10] <= 1000 && channels[9] >= 985)
+          // {
+          //   droid->sfx.playTrack(1, 0, 9, true);
+          // }
+          // else if(channels[10] >= 1800)
+          // {
+          //   droid->sfx.playTrack(5, 4, false);
+          // }
+        }
     
-        if(channels[6] == 172)
+        if(channels[8] <= 175)
         {
           droid->drive.setEnable(true);
         }

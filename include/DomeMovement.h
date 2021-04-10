@@ -62,7 +62,7 @@ class DomeMovement {
                 //domeSpinPotPos = analogRead(domeSpinPotPin);
 
                 move();
-                //spin();
+                spin();
            }
         }
 
@@ -78,7 +78,7 @@ class DomeMovement {
 
         void setDomePosition(int16_t x)
         {
-            targetSpin = map(x, 2412, 1100, 0, 1023);
+            targetSpin = map(x, 172, 1811, 2200, 800); // Map input range from min and max to -180 and 180 (Clockwise and counter)
         }
 
         float getDomeSpinPosition() {
@@ -104,9 +104,20 @@ class DomeMovement {
         }
 
         void spin()
-        {
-            //pwm.setPWM(domeSpinPin, 0, this->targetSpin);
-
+        {   
+            if(targetSpin < 1001 && targetSpin > 980)
+            {
+                //pwm.setPWM(domeSpinPin, 0, 1500);
+            }
+            else
+            {
+                pwm.setPWM(domeSpinPin, 0, this->targetSpin);
+            }
+            // else
+            // {
+            //     pwm.setPWM(domeSpinPin, this->targetSpin, 0);
+            // }
+            
             // VIEW MAPPED SPIN VALUE
             //Serial.println(this->targetSpin);
 

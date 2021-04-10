@@ -29,7 +29,7 @@ void setup()
         DRIVE_LEAN_SERVO_PIN
     );
 
-    //droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
+    droid.sfx.setup(SFX_RST, SFX_BAUD_RATE);
 
     //Log.notice(F("BB8 Drive Ready...\n"));
 

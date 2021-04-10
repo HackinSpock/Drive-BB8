@@ -9,8 +9,8 @@
 #include <utility/imumaths.h>
 
 // default settings, call setup to change these
-#define _IMU_SERIAL &Serial2
-#define _IMU_BAUD 115200
+#define _IMU_SERIAL &Serial3
+#define _IMU_BAUD 128000
 
 //#define DEBUG_IMU
 

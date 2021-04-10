@@ -15,13 +15,13 @@ class Droid {
         DomeMovement dome;
         Drive drive;
         // IMU imu;
-        // SoundFX sfx;
+        SoundFX sfx;
 
         void task() {
             //imu.task();
             dome.task();
             drive.task();
-            //sfx.task();
+            sfx.task();
         }
 };
 #endif //DROID_H_
