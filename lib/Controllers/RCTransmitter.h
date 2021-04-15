@@ -56,19 +56,9 @@ class RCTransmitter: public Controller {
           droid->drive.setDriveSpeed(channels[3]); // inputs from right joystick pitch for body drive forward/reverse
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
           droid->drive.setTilt(channels[2]); // inputs from right joystick roll for drive lean
-        }
-        // else
-        // {
-        //   droid->dome.setDomePosition(0);
-        //   droid->dome.setDomeXY(PITCH_CENTER, ROLL_CENTER);
 
-        //   droid->drive.setDriveSpeed(0);
-        //   droid->drive.setFlywheelSpeed(0);
-        //   droid->drive.setTilt(LEAN_CENTER);
-        // }
-
-        if(channels[11] >= 1800) // if flip switch is clicked
-        {
+          if(channels[11] >= 1800) // if flip switch is clicked
+          {
           // All possible mood types if switch 1/2 is forward, center or back
           if(channels[9] <= 180)
           {
@@ -94,7 +84,17 @@ class RCTransmitter: public Controller {
           // {
           //   droid->sfx.playTrack(5, 4, false);
           // }
+          }
         }
+        // else
+        // {
+        //   droid->dome.setDomePosition(0);
+        //   droid->dome.setDomeXY(PITCH_CENTER, ROLL_CENTER);
+
+        //   droid->drive.setDriveSpeed(0);
+        //   droid->drive.setFlywheelSpeed(0);
+        //   droid->drive.setTilt(LEAN_CENTER);
+        // }
     
         if(channels[8] <= 175)
         {

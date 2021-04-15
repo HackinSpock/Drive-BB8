@@ -62,7 +62,7 @@ class DomeMovement {
                 //domeSpinPotPos = analogRead(domeSpinPotPin);
 
                 move();
-                spin();
+                //spin();
            }
         }
 

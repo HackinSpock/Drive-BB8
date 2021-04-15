@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include "ArduinoLog.h"
 #include "Stream.h"
+#include <SoftwareSerial.h>
 #include "Adafruit_Soundboard.h"
 
 //#define DEBUG_SFX
@@ -43,7 +44,7 @@ class SoundFX {
       pinMode(this->sfx_fade_pin, INPUT);
 
       this->reset();
-      Log.notice(F("SoundFX::setup - complete.\n"));
+      //Log.notice(F("SoundFX::setup - complete.\n"));
     }
 
     /**
@@ -58,7 +59,7 @@ class SoundFX {
       #ifdef DEBUG_SFX
         if (count == 500) {
           count = 0;
-          Log.notice(F("SoundFX::task - PSI EN %T, LVL %d\n"),
+          //Log.notice(F("SoundFX::task - PSI EN %T, LVL %d\n"),
             this->psi_enabled, this->psi_level);
         } else {
           count++;
@@ -70,15 +71,15 @@ class SoundFX {
     * Play a file by name and set the PSI to enabled|disabled
     */
     void playFile(char* filename, boolean psiEnabled = true) {
-      Log.notice(F("SoundFX::playFile - %s\n"), filename);
+      //Log.notice(F("SoundFX::playFile - %s\n"), filename);
       if (this->isSoundActive()) {
           this->ss.println('q');
           unsigned long current = millis();
           // much faster than using serial communication
           while(this->isSoundActive()) {
             if ((millis() - current) > 100) {
-              Log.warning(F("SoundFX::playFile - Failed to stop audio track, "
-                "pin high.\n"));
+              //Log.warning(F("SoundFX::playFile - Failed to stop audio track, "
+                //"pin high.\n"));
               break;
             }
           }
@@ -121,7 +122,7 @@ class SoundFX {
       for (uint8_t i = 0; i < 5; i++) {
         this->ss.println("+");
       }
-      Log.notice(F("SoundFX::volUp() - volume up.\n"));
+      //Log.notice(F("SoundFX::volUp() - volume up.\n"));
     }
 
     /**
@@ -131,7 +132,7 @@ class SoundFX {
       for (uint8_t i = 0; i < 5; i++) {
         this->ss.println("-");
       }
-      Log.notice(F("SoundFX::volDown - volume down.\n"));
+      //Log.notice(F("SoundFX::volDown - volume down.\n"));
     }
 
   private:
