@@ -4,18 +4,16 @@
 #include "Arduino.h"
 #include "ArduinoLog.h"
 #include "Stream.h"
-#include <SoftwareSerial.h>
-#include "Adafruit_Soundboard.h"
+//#include "Adafruit_Soundboard.h"
 
 //#define DEBUG_SFX
 
 // default settings, call setup to change these
 #define _SFX_RST 4
-#define SFX_TX 5
-#define SFX_RX 6
-#define _SFX_BAUD_RATE 256000
+#define _SFX_SERIAL &Serial2
 #define _SFX_ACT_PIN 22
 #define _SFX_FADE_PIN A2
+#define _SFX_BAUD_RATE 256000
 
 
 // internal settings
@@ -30,12 +28,14 @@ class SoundFX {
     /**
     * Sets up the soundFX class.
     */
-    void setup(int8_t sfx_reset = _SFX_RST,
+    void setup(HardwareSerial* serial = _SFX_SERIAL,
+        int8_t sfx_reset = _SFX_RST,
         unsigned long baud_rate = _SFX_BAUD_RATE,
         uint8_t sfx_act_pin = _SFX_ACT_PIN,
         uint8_t sfx_fade_pin = _SFX_FADE_PIN
       ) {
-      ss.begin(baud_rate);
+      serial->begin(baud_rate);
+      this->serial = serial;
       this->sfx_act_pin = sfx_act_pin;
       this->sfx_fade_pin = sfx_fade_pin;
       this->sfx_reset_pin = sfx_reset;
@@ -73,7 +73,7 @@ class SoundFX {
     void playFile(char* filename, boolean psiEnabled = true) {
       //Log.notice(F("SoundFX::playFile - %s\n"), filename);
       if (this->isSoundActive()) {
-          this->ss.println('q');
+          this->serial->println('q');
           unsigned long current = millis();
           // much faster than using serial communication
           while(this->isSoundActive()) {
@@ -84,8 +84,8 @@ class SoundFX {
             }
           }
       }
-      this->ss.print('P');
-      this->ss.println(filename);
+      this->serial->print('P');
+      this->serial->println(filename);
       this->psi_enabled = psiEnabled;
       this->lastSound = millis();
     }
@@ -120,7 +120,7 @@ class SoundFX {
     */
     void volUp() {
       for (uint8_t i = 0; i < 5; i++) {
-        this->ss.println("+");
+        this->serial->println("+");
       }
       //Log.notice(F("SoundFX::volUp() - volume up.\n"));
     }
@@ -130,7 +130,7 @@ class SoundFX {
     */
     void volDown() {
       for (uint8_t i = 0; i < 5; i++) {
-        this->ss.println("-");
+        this->serial->println("-");
       }
       //Log.notice(F("SoundFX::volDown - volume down.\n"));
     }
@@ -138,10 +138,9 @@ class SoundFX {
   private:
     unsigned long previousMillis = 0; // used to determine if loop should run
     unsigned long lastSound = 0;
-    SoftwareSerial ss = SoftwareSerial(SFX_TX, SFX_RX);
-    Adafruit_Soundboard sfx = Adafruit_Soundboard(&ss, NULL, SFX_RST);
-    uint8_t sfx_act_pin, sfx_fade_pin;
-    uint8_t sfx_reset_pin;
+    HardwareSerial* serial;
+    //Adafruit_Soundboard sfx = Adafruit_Soundboard(&serial, NULL, SFX_RST);
+    uint8_t sfx_act_pin, sfx_fade_pin, sfx_reset_pin;
     bool psi_enabled = false;
     uint8_t psi_level = 0;
     #ifdef DEBUG_SFX

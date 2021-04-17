@@ -11,7 +11,7 @@ Droid droid = Droid();
 Controller* controller = new RCTransmitter();
 
 void setup()
-{
+{   
     //Log.notice(F("BB8 Drive Control Started...\n"));
 
     droid.dome.setup(
@@ -21,21 +21,20 @@ void setup()
         DOME_SPIN_POT_PIN
     );
 
-    controller->setup(&droid);
-
     // add &droid.imu, as second parameter once fixed
     droid.drive.setup(
         &droid.dome,
         DRIVE_LEAN_SERVO_PIN
     );
 
-    droid.sfx.setup(SFX_RST, SFX_BAUD_RATE);
+    //droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
 
-    //Log.notice(F("BB8 Drive Ready...\n"));
+    controller->setup(&droid);
 
     Serial.begin(115200);
     Serial1.begin(9600);
 
+    //Log.notice(F("BB8 Drive Ready...\n"));
 }
 
 void loop()

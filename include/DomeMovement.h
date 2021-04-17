@@ -70,15 +70,19 @@ class DomeMovement {
         {   
             //this->receivedPitch = pitch; // Look at raw pitch value for testing
             //this->receivedRoll = roll; // Look at raw roll value for testing
+
+            int pitchRange = map(pitch, 172, 1811, 988, 2012);
+            int rollRange = map(roll, 172, 1811, 988, 2012);
             
-            targetPitch = map(pitch, 172, 1811, PITCH_BACK, PITCH_FRONT);
-            targetRoll = map(roll, 172, 1811, ROLL_LEFT, ROLL_RIGHT);
+            targetPitch = map(pitchRange, 988, 2012, PITCH_BACK, PITCH_FRONT);
+            targetRoll = map(rollRange, 988, 2012, ROLL_LEFT, ROLL_RIGHT);
             
         }
 
         void setDomePosition(int16_t x)
-        {
-            targetSpin = map(x, 172, 1811, 2200, 800); // Map input range from min and max to -180 and 180 (Clockwise and counter)
+        {   
+            int spinRange = map(x, 172, 1811, 988, 2012);
+            targetSpin = map(spinRange, 988, 2012, 2200, 800); // Map input range from min and max to -180 and 180 (Clockwise and counter)
         }
 
         float getDomeSpinPosition() {
@@ -105,7 +109,7 @@ class DomeMovement {
 
         void spin()
         {   
-            if(targetSpin < 1001 && targetSpin > 980)
+            if(targetSpin < 1518 && targetSpin > 1498)
             {
                 //pwm.setPWM(domeSpinPin, 0, 1500);
             }

@@ -39,19 +39,22 @@ class Drive {
         
         void setDriveSpeed(int16_t speed) 
         {   
-            this->rawSpeed = speed;
-            targetDriveSpeed = map(speed, 172, 1811, -127, 127);
+            //this->rawSpeed = speed;
+            int driveRange = map(speed, 172, 1811, 988, 2012);
+            targetDriveSpeed = map(driveRange, 988, 2012, -127, 127);
         }
 
         void setFlywheelSpeed(int16_t speed) 
-        {
-             this->targetFlywheelSpeed = map(speed, 172, 1810, -127, 127);
+        {   
+            int flywheelRange = map(speed, 172, 1811, 988, 2012);
+            this->targetFlywheelSpeed = map(flywheelRange, 988, 2012, -127, 127);
         }
 
         void setTilt(int16_t x) 
         {   
             //this->rawLean = x;
-            this->targetLean = map(x, 172, 1811, LEAN_LEFT, LEAN_RIGHT);
+            int tiltRange = map(x, 172, 1811, 988, 2012);
+            this->targetLean = map(tiltRange, 988, 2012, LEAN_LEFT, LEAN_RIGHT);
         }
 
         void task() // Main loop
