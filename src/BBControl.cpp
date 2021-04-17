@@ -27,7 +27,7 @@ void setup()
         DRIVE_LEAN_SERVO_PIN
     );
 
-    //droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
+    droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
 
     controller->setup(&droid);
 

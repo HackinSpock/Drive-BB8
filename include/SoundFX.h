@@ -10,7 +10,7 @@
 
 // default settings, call setup to change these
 #define _SFX_RST 4
-#define _SFX_SERIAL &Serial2
+#define _SFX_SERIAL &Serial3
 #define _SFX_ACT_PIN 22
 #define _SFX_FADE_PIN A2
 #define _SFX_BAUD_RATE 256000
@@ -70,6 +70,11 @@ class SoundFX {
     /**
     * Play a file by name and set the PSI to enabled|disabled
     */
+    // void playFile()
+    // {
+    //   this->serial->println(10);
+    // }
+
     void playFile(char* filename, boolean psiEnabled = true) {
       //Log.notice(F("SoundFX::playFile - %s\n"), filename);
       if (this->isSoundActive()) {
