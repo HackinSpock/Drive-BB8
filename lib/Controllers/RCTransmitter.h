@@ -81,29 +81,29 @@ class RCTransmitter: public Controller {
           // All possible mood types if switch 1/2 is forward, center or back
           if(channels[10] <= 180)
           {
-            droid->sfx.playTrack(0, 0, 9, true);
+            droid->sfx.playTrack(0, 9, true);
           }
           else if(channels[10] <= 1000 && channels[10] >= 985)
           {
-            droid->sfx.playTrack(1, 0, 9, true);
+            droid->sfx.playTrack(0, 9, true);
           }
           else //if(channels[9] >= 1800)
           {
-            droid->sfx.playTrack(2, 0, 9, true);
+            droid->sfx.playTrack(0, 9, true);
           }
         }   
 
         if(channels[9] <= 175)
         {
-          droid->sfx.volUp();
+          droid->sfx.volUp(205);
         }
         else if(channels[9] >= 1750)
         {
-          droid->sfx.volDown();
+          droid->sfx.volDown(105);
         }
         else
         {
-          // do nothing
+          //droid->sfx.volDown(150);
         }
         
 
