@@ -11,8 +11,8 @@
 // default settings, call setup to change these
 #define _SFX_RST 4
 //#define _SFX_SERIAL &Serial3
-#define SFX_TX 5
-#define SFX_RX 6
+#define SFX_TX 10
+#define SFX_RX 11
 
 #define _SFX_ACT_PIN 22
 #define _SFX_FADE_PIN A2
@@ -54,6 +54,7 @@ class SoundFX {
     * Work.  Run this repeatidly in the main loop.
     */
     void task() {
+      serial.listen();
       unsigned long currentMillis = millis();
       if (currentMillis - this->previousMillis >= _SFX_TASK_INTERVAL) {
         this->previousMillis = currentMillis;
@@ -147,7 +148,7 @@ class SoundFX {
   private:
     unsigned long previousMillis = 0; // used to determine if loop should run
     unsigned long lastSound = 0;
-    SoftwareSerial serial = SoftwareSerial(SFX_TX, SFX_RX);
+    SoftwareSerial serial = SoftwareSerial(SFX_TX, SFX_RX); // TX, RX
     Adafruit_Soundboard fxSound = Adafruit_Soundboard(&serial, NULL, SFX_RST);
     //HardwareSerial* serial;
     uint8_t sfx_act_pin, sfx_fade_pin, sfx_reset_pin;

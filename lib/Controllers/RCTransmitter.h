@@ -11,6 +11,7 @@ class RCTransmitter: public Controller {
   public:
     void setup(Droid* droid) override {
         this->droid = droid;
+        //droid->sfx.playTrack(17, 27, true);
         // pinMode(5, INPUT);
         // pinMode(6, INPUT);
         // pinMode(7, INPUT);
@@ -76,35 +77,35 @@ class RCTransmitter: public Controller {
           droid->drive.setEnable(false);
         }
 
-        if(channels[11] >= 1500) // if flip switch is clicked
-        {
-          // All possible mood types if switch 1/2 is forward, center or back
-          if(channels[10] <= 180)
-          {
-            droid->sfx.playTrack(0, 9, true);
-          }
-          else if(channels[10] <= 1000 && channels[10] >= 985)
-          {
-            droid->sfx.playTrack(0, 9, true);
-          }
-          else //if(channels[9] >= 1800)
-          {
-            droid->sfx.playTrack(0, 9, true);
-          }
-        }   
+        // if(channels[11] >= 1500) // if flip switch is clicked
+        // {
+        //   // All possible mood types if switch 1/2 is forward, center or back
+        //   if(channels[10] <= 180)
+        //   {
+        //     droid->sfx.playTrack(17, 27, true);
+        //   }
+        //   else if(channels[10] <= 1000 && channels[10] >= 985)
+        //   {
+        //     droid->sfx.playTrack(28, 38, true);
+        //   }
+        //   else //if(channels[9] >= 1800)
+        //   {
+        //     droid->sfx.playTrack(0, 16, true);
+        //   }
+        // }   
 
-        if(channels[9] <= 175)
-        {
-          droid->sfx.volUp(205);
-        }
-        else if(channels[9] >= 1750)
-        {
-          droid->sfx.volDown(105);
-        }
-        else
-        {
-          //droid->sfx.volDown(150);
-        }
+        // if(channels[9] <= 175)
+        // {
+        //   droid->sfx.volUp(205);
+        // }
+        // else if(channels[9] >= 1750)
+        // {
+        //   droid->sfx.volDown(105);
+        // }
+        // else
+        // {
+        //   //droid->sfx.volDown(150);
+        // }
         
 
           
