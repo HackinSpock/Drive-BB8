@@ -27,12 +27,13 @@ void setup()
         DRIVE_LEAN_SERVO_PIN
     );
 
-    droid.sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
+    droid.sfx.setup(SFX_RST);
 
     controller->setup(&droid);
 
-    Serial.begin(115200);
-    Serial1.begin(9600);
+    Serial.begin(38400);
+    Serial1.begin(19200);
+    Serial2.begin(9600);
 
     //Log.notice(F("BB8 Drive Ready...\n"));
 }

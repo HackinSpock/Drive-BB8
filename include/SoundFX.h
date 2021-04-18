@@ -4,13 +4,13 @@
 #include "Arduino.h"
 #include "ArduinoLog.h"
 #include "Stream.h"
-//#include "Adafruit_Soundboard.h"
+#include "Adafruit_Soundboard.h"
 
 //#define DEBUG_SFX
 
 // default settings, call setup to change these
 #define _SFX_RST 4
-#define _SFX_SERIAL &Serial
+//#define _SFX_SERIAL &Serial2
 //#define SFX_TX 10
 //#define SFX_RX 11
 
@@ -31,13 +31,11 @@ class SoundFX {
     /**
     * Sets up the soundFX class.
     */
-    void setup(HardwareSerial* serial = _SFX_SERIAL,
+    void setup(
         int8_t sfx_reset = _SFX_RST,
-        unsigned long baud_rate = _SFX_BAUD_RATE,
         uint8_t sfx_act_pin = _SFX_ACT_PIN,
         uint8_t sfx_fade_pin = _SFX_FADE_PIN
       ) {
-      serial->begin(baud_rate);
       //this->serial = serial;
       this->sfx_act_pin = sfx_act_pin;
       this->sfx_fade_pin = sfx_fade_pin;
@@ -48,6 +46,8 @@ class SoundFX {
 
       this->reset();
       //Log.notice(F("SoundFX::setup - complete.\n"));
+
+       
     }
 
     /**
@@ -59,15 +59,15 @@ class SoundFX {
         this->previousMillis = currentMillis;
         this->psiActivity();
       }
-      #ifdef DEBUG_SFX
-        if (count == 500) {
-          count = 0;
-          //Log.notice(F("SoundFX::task - PSI EN %T, LVL %d\n"),
-            this->psi_enabled, this->psi_level);
-        } else {
-          count++;
-        }
-      #endif
+      // #ifdef DEBUG_SFX
+      //   if (count == 500) {
+      //     count = 0;
+      //     //Log.notice(F("SoundFX::task - PSI EN %T, LVL %d\n"),
+      //       this->psi_enabled, this->psi_level);
+      //   } else {
+      //     count++;
+      //   }
+      // #endif
     }
 
     /**
@@ -77,27 +77,6 @@ class SoundFX {
     // {
     //   this->serial->println(10);
     // }
-
-    void playFile(uint8_t filename, boolean psiEnabled = true) {
-      //Log.notice(F("SoundFX::playFile - %s\n"), filename);
-      if (this->isSoundActive()) {
-          //this.serial->println('q');
-          unsigned long current = millis();
-          // much faster than using serial communication
-          while(this->isSoundActive()) {
-            if ((millis() - current) > 100) {
-              //Log.warning(F("SoundFX::playFile - Failed to stop audio track, "
-                //"pin high.\n"));
-              break;
-            }
-          }
-      }
-      this->serial->print('P');
-      this->serial->println(filename);
-      //fxSound.playTrack(filename);
-      this->psi_enabled = psiEnabled;
-      this->lastSound = millis();
-    }
 
     /**
     * Always call by file name.
@@ -124,13 +103,34 @@ class SoundFX {
       this->playFile(random(min, max), psiEnabled);
     }
 
+    void playFile(uint8_t filename, boolean psiEnabled = true) {
+      //Log.notice(F("SoundFX::playFile - %s\n"), filename);
+      if (this->isSoundActive()) {
+          //this->serial->println('q');
+          unsigned long current = millis();
+          // much faster than using serial communication
+          while(this->isSoundActive()) {
+            if ((millis() - current) > 100) {
+              //Log.warning(F("SoundFX::playFile - Failed to stop audio track, "
+                //"pin high.\n"));
+              break;
+            }
+          }
+      }
+      //this->serial->print('P');
+      //this->serial->println(filename);
+      fxSound.playTrack((uint8_t)filename);
+      this->psi_enabled = psiEnabled;
+      this->lastSound = millis();
+    }
+
     /**
     * Raises volume to 205 (0...205 is the range)
     */
     void volUp(uint16_t volume) {
       for (uint8_t i = 0; i < volume; i++) {
-        //this->fxSound.volUp();
-        this->serial->println("+");
+        this->fxSound.volUp();
+        //this->serial->println("+");
       }
       //Log.notice(F("SoundFX::volUp() - volume up.\n"));
     }
@@ -140,7 +140,8 @@ class SoundFX {
     */
     void volDown(uint16_t volume) {
       for (uint8_t i = 0; i < volume; i++) {
-        this->serial->println("-");
+        this->fxSound.volDown();
+        //this->serial->println("-");
       }
       //Log.notice(F("SoundFX::volDown - volume down.\n"));
     }
@@ -149,8 +150,8 @@ class SoundFX {
     unsigned long previousMillis = 0; // used to determine if loop should run
     unsigned long lastSound = 0;
     //SoftwareSerial serial = SoftwareSerial(SFX_TX, SFX_RX); // TX, RX
-    //Adafruit_Soundboard fxSound = Adafruit_Soundboard(&serial, NULL, SFX_RST);
-    HardwareSerial* serial;
+    //HardwareSerial* serial;
+    Adafruit_Soundboard fxSound = Adafruit_Soundboard(&Serial2, NULL, _SFX_RST);
     uint8_t sfx_act_pin, sfx_fade_pin, sfx_reset_pin;
     bool psi_enabled = false;
     uint8_t psi_level = 0;

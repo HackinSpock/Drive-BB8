@@ -27,7 +27,7 @@ class RCTransmitter: public Controller {
       
 
   private:
-    SBUS x8r = SBUS(Serial2);
+    SBUS x8r = SBUS(Serial3);
     Droid* droid;
 
     uint16_t channels[16];
@@ -57,6 +57,23 @@ class RCTransmitter: public Controller {
           droid->drive.setDriveSpeed(channels[3]); // inputs from right joystick pitch for body drive forward/reverse
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
           droid->drive.setTilt(channels[2]); // inputs from right joystick roll for drive lean 
+
+          if(channels[11] >= 1750) // if flip switch is clicked
+          {
+              // All possible mood types if switch 1/2 is forward, center or back
+            if(channels[10] <= 180)
+            {
+              droid->sfx.playTrack(17, 27, true);
+            }
+            else if(channels[10] <= 1000 && channels[10] >= 985)
+            {
+              droid->sfx.playTrack(28, 38, true);
+            }
+            else //if(channels[9] >= 1800)
+            {
+              droid->sfx.playTrack(0, 16, true);
+            }
+          } 
         }
         // else
         // {
@@ -77,35 +94,20 @@ class RCTransmitter: public Controller {
           droid->drive.setEnable(false);
         }
 
-        if(channels[11] >= 1500) // if flip switch is clicked
-        {
-          // All possible mood types if switch 1/2 is forward, center or back
-          if(channels[10] <= 180)
-          {
-            droid->sfx.playTrack(17, 27, true);
-          }
-          else if(channels[10] <= 1000 && channels[10] >= 985)
-          {
-            droid->sfx.playTrack(28, 38, true);
-          }
-          else //if(channels[9] >= 1800)
-          {
-            droid->sfx.playTrack(0, 16, true);
-          }
-        }   
+          
 
-        if(channels[9] <= 175)
-        {
-          droid->sfx.volUp(205);
-        }
-        else if(channels[9] >= 1750)
-        {
-          droid->sfx.volDown(105);
-        }
-        else
-        {
-          //droid->sfx.volDown(150);
-        }
+        // if(channels[9] <= 175)
+        // {
+        //   droid->sfx.volUp(205);
+        // }
+        // else if(channels[9] >= 1750)
+        // {
+        //   droid->sfx.volDown(105);
+        // }
+        // else
+        // {
+        //   //droid->sfx.volDown(150);
+        // }
         
 
           

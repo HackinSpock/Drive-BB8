@@ -49,7 +49,7 @@
 **/
 // sound board configuration
 #define SFX_RST 4
-#define SFX_SERIAL &Serial
+#define SFX_SERIAL &Serial2
 #define SFX_BAUD_RATE 256000 
 #define SFX_ACT_PIN 22
 #define SFX_FADE_PIN A2
