@@ -27,7 +27,7 @@ class RCTransmitter: public Controller {
       
 
   private:
-    SBUS x8r = SBUS(Serial3);
+    SBUS x8r = SBUS(Serial2);
     Droid* droid;
 
     uint16_t channels[16];
@@ -54,26 +54,9 @@ class RCTransmitter: public Controller {
           droid->dome.setDomePosition(channels[4]); // inputs left joystick potentionmeter data for dome spin
           droid->dome.setDomeXY(channels[0], channels[1]); // inputs from left joystick pitch and roll for dome pitch and roll
 
-          droid->drive.setDriveSpeed(channels[3]); // inputs from right joystick pitch for body drive forward/reverse
+          droid->drive.setDriveSpeed(channels[2]); // inputs from right joystick pitch for body drive forward/reverse
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
-          droid->drive.setTilt(channels[2]); // inputs from right joystick roll for drive lean 
-
-          if(channels[11] >= 1750) // if flip switch is clicked
-          {
-              // All possible mood types if switch 1/2 is forward, center or back
-            if(channels[10] <= 180)
-            {
-              droid->sfx.playTrack(17, 27, true);
-            }
-            else if(channels[10] <= 1000 && channels[10] >= 985)
-            {
-              droid->sfx.playTrack(28, 38, true);
-            }
-            else //if(channels[9] >= 1800)
-            {
-              droid->sfx.playTrack(0, 16, true);
-            }
-          } 
+          droid->drive.setTilt(channels[3]); // inputs from right joystick roll for drive lean         
         }
         // else
         // {
@@ -94,19 +77,34 @@ class RCTransmitter: public Controller {
           droid->drive.setEnable(false);
         }
 
-          
+        // if(channels[11] >= 1750) // if flip switch is clicked
+        //   {
+        //       // All possible mood types if switch 1/2 is forward, center or back
+        //     if(channels[10] <= 180)
+        //     {
+        //       droid->sfx.playTrack(1, 7, true);
+        //     } 
+        //     else if(channels[10] <= 1000 && channels[10] >= 985)
+        //     {
+        //       droid->sfx.playTrack(8, 15, true);
+        //     }
+        //     else //if(channels[9] >= 1800)
+        //     {
+        //       droid->sfx.playTrack(16, 24, true);
+        //     }
+        //   } 
 
         // if(channels[9] <= 175)
         // {
-        //   droid->sfx.volUp(205);
+        //   droid->sfx.volUp(30);
         // }
         // else if(channels[9] >= 1750)
         // {
-        //   droid->sfx.volDown(105);
+        //   droid->sfx.volDown(20);
         // }
         // else
         // {
-        //   //droid->sfx.volDown(150);
+        //   //droid->sfx.volDown(10);
         // }
         
 

@@ -109,7 +109,7 @@ class DomeMovement {
 
         void spin()
         {   
-            if(targetSpin < 1518 && targetSpin > 1498)
+            if(targetSpin < 1520 && targetSpin > 1485)
             {
                 //pwm.setPWM(domeSpinPin, 0, 1500);
             }
