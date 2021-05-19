@@ -21,15 +21,15 @@ class Drive {
         ~Drive() {;}
        
         // add  IMU* imu, once fixed later
-        void setup(DomeMovement* dome, IMU *imu, uint8_t leanServoPin) 
+        void setup(DomeMovement* dome, uint8_t leanServoPin) 
         {   
             this->dome = dome;
-            this->imu = imu;
+            //this->imu = imu;
 
             // lean
             this->leanServoPin = leanServoPin;
 
-            imu->IMUtimeout();
+            //imu->IMUtimeout();
             dome->pwm.begin(); // Enable pwm board
             dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
 
@@ -42,8 +42,8 @@ class Drive {
         {   
             //this->rawSpeed = speed;
             int driveRange = map(speed, 172, 1811, 988, 2012);
-            //targetDriveSpeed = map(driveRange, 988, 2012, -127, 127);
-            targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
+            targetDriveSpeed = map(driveRange, 988, 2012, -127, 127);
+            //targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
         }
 
         void setFlywheelSpeed(int16_t speed) 
@@ -75,8 +75,9 @@ class Drive {
 
         void drive() // Drives the BB unit FWD and Reverse
         {   
-            float torque = drivePID(targetDriveSpeed);
-            torque = constrain(torque, -255, 255);
+            //float torque = drivePID(targetDriveSpeed);
+            //torque = constrain(torque, -127, 127);
+            uint16_t torque = targetDriveSpeed;
 
             if(enabled == true)
             {
@@ -124,17 +125,17 @@ class Drive {
             //delay(15);
         }
 
-        float drivePID(int16_t throttleAngle)
-        {   
-            this->y_orientation = imu->getYOrientation();
-            errorX = throttleAngle - y_orientation; // set error to angle of IMU
-            integral = integral + (errorX * dTime); // calculate Integral
-            derivative = (errorX-previousError) / dTime; // // calculate Derivitive
-            outputX = (kP * errorX)+(kI * integral)+(kD * derivative); // Set output (CV)
-            previousError = errorX; // set previous error to current error. This is for the derivitive to check if the system is going too fast   
+        // float drivePID(int16_t throttleAngle)
+        // {   
+        //     this->y_orientation = imu->getYOrientation();
+        //     errorX = throttleAngle - y_orientation; // set error to angle of IMU
+        //     integral = integral + (errorX * dTime); // calculate Integral
+        //     derivative = (errorX-previousError) / dTime; // // calculate Derivitive
+        //     outputX = (kP * errorX)+(kI * integral)+(kD * derivative); // Set output (CV)
+        //     previousError = errorX; // set previous error to current error. This is for the derivitive to check if the system is going too fast   
 
-            return outputX;
-        }
+        //     return outputX;
+        // }
 
         private:
             unsigned long previousMillis = 0; // Used to determine if loop should run
