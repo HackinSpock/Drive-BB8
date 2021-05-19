@@ -21,14 +21,15 @@ class Drive {
         ~Drive() {;}
        
         // add  IMU* imu, once fixed later
-        void setup(DomeMovement* dome, uint8_t leanServoPin) 
+        void setup(DomeMovement* dome, IMU *imu, uint8_t leanServoPin) 
         {   
             this->dome = dome;
-            //this->imu = imu;
+            this->imu = imu;
 
             // lean
             this->leanServoPin = leanServoPin;
 
+            imu->IMUtimeout();
             dome->pwm.begin(); // Enable pwm board
             dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
 
@@ -41,7 +42,8 @@ class Drive {
         {   
             //this->rawSpeed = speed;
             int driveRange = map(speed, 172, 1811, 988, 2012);
-            targetDriveSpeed = map(driveRange, 988, 2012, -127, 127);
+            //targetDriveSpeed = map(driveRange, 988, 2012, -127, 127);
+            targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
         }
 
         void setFlywheelSpeed(int16_t speed) 
@@ -72,14 +74,17 @@ class Drive {
         }
 
         void drive() // Drives the BB unit FWD and Reverse
-        { 
+        {   
+            float torque = drivePID(targetDriveSpeed);
+            torque = constrain(torque, -255, 255);
+
             if(enabled == true)
             {
-                if(targetDriveSpeed > -10 && targetDriveSpeed < 10){
+                if(torque > -10 && torque < 10){
                     ST.motor(1, 0);
                 }
                 else {
-                    ST.motor(1, -targetDriveSpeed);
+                    ST.motor(1, -torque);
                 }
             }
             else
@@ -119,22 +124,47 @@ class Drive {
             //delay(15);
         }
 
+        float drivePID(int16_t throttleAngle)
+        {   
+            this->y_orientation = imu->getYOrientation();
+            errorX = throttleAngle - y_orientation; // set error to angle of IMU
+            integral = integral + (errorX * dTime); // calculate Integral
+            derivative = (errorX-previousError) / dTime; // // calculate Derivitive
+            outputX = (kP * errorX)+(kI * integral)+(kD * derivative); // Set output (CV)
+            previousError = errorX; // set previous error to current error. This is for the derivitive to check if the system is going too fast   
+
+            return outputX;
+        }
+
         private:
             unsigned long previousMillis = 0; // Used to determine if loop should run
             uint8_t leanServoPin;
 
-            uint8_t rawSpeed;
-
             int16_t targetDriveSpeed = 0;
             int16_t targetFlywheelSpeed = 0;
             int16_t targetLean = 0;
-            int16_t rawLean = 0;
             
             IMU* imu;
             DomeMovement* dome;
+            
             Sabertooth ST = Sabertooth(128, Serial1); // Address 128, and use SWSerial as the serial port.
 
             bool enabled = false;
+
+            float kP = 0;
+            float kI = 0;
+            float kD = 0;
+
+            float errorX = 0.0; // Error for X-Axis
+            float previousError = 0.0;
+            float derivative = 0.0;
+            float dTime = 1;
+            float integral = 0.0;
+            float setPoint = 0.0;
+            float current = 0.0;
+            float outputX = 0.0;
+
+            double y_orientation;
 
             // Lean left, center, right values.
             #ifdef DRIVE_LEAN_LEFT

@@ -8,35 +8,19 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-// default settings, call setup to change these
-#define _IMU_SERIAL &Serial3
-#define _IMU_BAUD 128000
 
 //#define DEBUG_IMU
 
 class IMU {
     public:
-        IMU() {
-            setup(_IMU_SERIAL, _IMU_BAUD);
-        }
+        IMU() {}
         ~IMU() {;}
-
-        struct RECEIVE_DATA_STRUCTURE_IMU{
-            float IMUloop;
-            float pitch;
-            float roll;
-        } data;
-
-        byte status;
 
         /**
         * Setup the class.
         */
 
-       void setup(HardwareSerial* serial, long baud_rate) {
-           serial->begin(baud_rate);
-           bno.setExtCrystalUse(true);
-       }
+       void setup() {}
 
        /**
         * Recieves the data from the IMU
@@ -44,27 +28,47 @@ class IMU {
 
        void task(){
            if((millis() - lastRecievedMillis) >= 10){
-                sensors_event_t event; 
-                bno.getEvent(&event);
+                sensors_event_t orientationData; 
+                bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
+                y_orientation = printEvent(&orientationData);
            }
            IMUtimeout();
        }
 
-    private:
-        unsigned long lastRecievedMillis;
-        uint16_t BNO055_SAMPLERATE_DELAY_MS = 10; //how often to read data from the board
+        double printEvent(sensors_event_t* event) {
+            //double x = -1000000; 
+            double y = -1000000; 
+            //double z = -1000000; //dumb values, easy to spot problem
+            if (event->type == SENSOR_TYPE_ORIENTATION) {
+                //x = event->orientation.x;
+                y = event->orientation.y;
+                //z = event->orientation.z;
+            }
+            else {
+                //Serial.print("Unk:");
+            }
+            return y;
+        }
 
-        Adafruit_BNO055 bno = Adafruit_BNO055(55);
-
+        double getYOrientation()
+        {
+            return y_orientation;
+        }
+       
         void IMUtimeout() {
             if(!bno.begin())
             {
                 /* There was a problem detecting the BNO055 ... check your connections */
-                Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+                //Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
                 while(1);
             }
         }
 
+    private:
+        unsigned long lastRecievedMillis;
+        Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
+
+        float y_orientation;
 };
 
 #endif //IMU_H_

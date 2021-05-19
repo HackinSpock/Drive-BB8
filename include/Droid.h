@@ -14,11 +14,11 @@ class Droid {
     public:
         DomeMovement dome;
         Drive drive;
-        // IMU imu;
+        IMU imu;
         //SoundFX sfx;
 
         void task() {
-            //imu.task();
+            imu.task();
             dome.task();
             drive.task();
             //sfx.task();

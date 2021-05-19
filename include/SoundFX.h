@@ -88,7 +88,7 @@ class SoundFX {
     //Adafruit_Soundboard fxSound = Adafruit_Soundboard(&Serial2, NULL, _SFX_RST);
     DFRobotDFPlayerMini myMP3 = DFRobotDFPlayerMini();
     uint8_t sfx_fade_pin, sfx_reset_pin;
-    bool psi_enabled = false;
+    bool psi_enabled = false; 
     uint8_t psi_level = 0;
 
     void psiActivity() {
