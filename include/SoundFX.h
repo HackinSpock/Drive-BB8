@@ -6,20 +6,15 @@
 #include "Stream.h"
   
 #include "DFRobotDFPlayerMini.h"
-//#include "Adafruit_Soundboard.h"
 
-// default settings, call setup to change these
-#define _SFX_RST 4
-#define _SFX_FADE_PIN A1
-#define _SFX_BAUD_RATE 9600
+#define _SFX_FADE_PIN A2
 
 // internal settings
 #define _SFX_TASK_INTERVAL 50
 
 class SoundFX {
   public:
-    SoundFX() {
-    }
+    SoundFX() {}
     ~SoundFX() {;}
 
     /**
@@ -28,14 +23,12 @@ class SoundFX {
     void setup(
         uint8_t sfx_fade_pin = _SFX_FADE_PIN
       ) {
-      myMP3.begin(Serial1);
+      mp3Timout(); // check if DFplayer is properly connected
 
-      this->sfx_fade_pin = sfx_fade_pin;
-      pinMode(this->sfx_fade_pin, INPUT);
+      // this->sfx_fade_pin = sfx_fade_pin;
+      // pinMode(this->sfx_fade_pin, INPUT);
 
-      //this->myMP3.reset();
-      myMP3.volume(30);
-      myMP3.play(1);
+      myDFPlayer.volume(30);
     }
 
     /**
@@ -45,57 +38,83 @@ class SoundFX {
       unsigned long currentMillis = millis();
       if (currentMillis - this->previousMillis >= _SFX_TASK_INTERVAL) {
         this->previousMillis = currentMillis;
-        this->psiActivity();
+        //this->psiActivity();
       }
     }
 
-    /**
-    * Convience method to play a track in bank given a range.
-    */
-    void playTrack(uint16_t min, uint8_t max, boolean psiEnabled) {
-      this->playFile(random(min, max), psiEnabled);
+    void playFile(uint16_t isPlaying, boolean psiEnabled) {
+      if(isPlaying > (oldIsPlaying + 1000))
+      {
+        this->myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
+        this->psi_enabled = psiEnabled;
+      }
+      else if(isPlaying < (oldIsPlaying - 1000))
+      {
+        oldIsPlaying = isPlaying;
+      }
     }
 
-    void playFile(uint16_t filename, boolean psiEnabled = true) {
-      // if (this->myMP3.available()) 
-      // {
-      //   this->myMP3.stop(); // stop the current sound that is playing
-      //   this->myMP3.play(filename); // play new filename
-      // }
-      this->myMP3.play(filename); // play new filename
-      this->psi_enabled = psiEnabled;
+    void soundType(uint16_t type)
+    {
+      if(type <= 180)
+      {
+        this->trackMin = 1;
+        this->trackMax = 7;
+      } 
+      else if(type <= 1000 && type >= 985)
+      {
+        this->trackMin = 8;
+        this->trackMax = 15;
+      }
+      else //if(type >= 1800)
+      {
+        this->trackMin = 16;
+        this->trackMax = 24;
+      }
     }
 
-    /**
-    * Raises volume to 205 (0...205 is the range)
-    */
-    void volUp(uint16_t volume) {
-        this->myMP3.volume(volume);
+    void adjustVolume(uint16_t volume) { // 0 - 30
+      if(volume <= 180)
+      {
+        myDFPlayer.volume(10);
+      } 
+      else if(volume <= 1000 && volume >= 985)
+      {
+        myDFPlayer.volume(20);
+      }
+      else //if(type >= 1800)
+      {
+        myDFPlayer.volume(30);
+      }
     }
 
-    /**
-    * Lower volume in increments of 10 (0...205 is the range)
-    */
-    void volDown(uint16_t volume) {
-        this->myMP3.volume(volume);
+    void mp3Timout()
+    {
+      if (!myDFPlayer.begin(Serial3)) {  //Use hardwareserial to communicate with mp3.
+        while(true){
+          //delay
+        }
+      }
     }
 
   private:
     unsigned long previousMillis = 0; // used to determine if loop should run
     unsigned long lastSound = 0;
-    //SoftwareSerial serial = SoftwareSerial(SFX_TX, SFX_RX); // TX, RX
-    //HardwareSerial* serial;
-    //Adafruit_Soundboard fxSound = Adafruit_Soundboard(&Serial2, NULL, _SFX_RST);
-    DFRobotDFPlayerMini myMP3 = DFRobotDFPlayerMini();
-    uint8_t sfx_fade_pin, sfx_reset_pin;
+
+    DFRobotDFPlayerMini myDFPlayer = DFRobotDFPlayerMini();
+    uint8_t sfx_fade_pin;
     bool psi_enabled = false; 
+
     uint8_t psi_level = 0;
+    uint16_t trackMin;
+    uint16_t trackMax;
+    uint16_t oldIsPlaying;
 
     void psiActivity() {
       if ((millis() - this->lastSound) < 500 && this->psi_enabled) {
         readLevel();
       } else if (this->psi_enabled) {
-        if (!this->myMP3.available()) {
+        if (!this->myDFPlayer.available()) {
           readLevel();
         } else {
           this->psi_enabled = false;
