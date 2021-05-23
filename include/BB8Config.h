@@ -20,9 +20,9 @@
 #define DOME_ROLL_SERVO_PIN 6
 
 //Pitch position values
-#define DOME_TILT_PITCH_FRONT 2800
+#define DOME_TILT_PITCH_FRONT 2350
 #define DOME_TILT_PITCH_CENTER 2200
-#define DOME_TILT_PITCH_BACK 1600
+#define DOME_TILT_PITCH_BACK 1300
 
 //Roll position values
 #define DOME_TILT_ROLL_LEFT 1000
@@ -42,16 +42,12 @@
 #define DRIVE_LEAN_SERVO_PIN 7
 #define DRIVE_LEAN_LEFT 1800
 #define DRIVE_LEAN_CENTER 2000
-#define DRIVE_LEAN_RIGHT 2500
+#define DRIVE_LEAN_RIGHT 2600
 
 /**
 * Sound FX
 **/
 // sound board configuration
-#define SFX_RST 4
-#define SFX_SERIAL &Serial2
-#define SFX_BAUD_RATE 256000 
-#define SFX_ACT_PIN 22
 #define SFX_FADE_PIN A2
 
 /**

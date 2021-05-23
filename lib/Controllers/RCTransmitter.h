@@ -11,20 +11,11 @@ class RCTransmitter: public Controller {
   public:
     void setup(Droid* droid) override {
         this->droid = droid;
-        //droid->sfx.playTrack(17, 27, true);
-        // pinMode(5, INPUT);
-        // pinMode(6, INPUT);
-        // pinMode(7, INPUT);
-        // pinMode(8, INPUT);
-        // pinMode(9, INPUT);
-        // pinMode(10, INPUT);
-        // pinMode(11, INPUT);
     }
 
     void task() override {
       this->processInput();
     }
-      
 
   private:
     SBUS x8r = SBUS(Serial2);
@@ -33,17 +24,6 @@ class RCTransmitter: public Controller {
     uint16_t channels[16];
     bool failSafe;
     bool lostFrame;
-
-    // Declaration of each channels function
-    // uint16_t domePitch = channels[0];
-    // uint16_t domeRoll = channels[1];
-    // int16_t domeSpin = channels[4];
-
-    // uint16_t drive = channels[3];
-    // uint16_t lean = channels[2];
-    // uint16_t flywheel = channels[5];
-
-    // uint16_t START = channels[6]; // switch type channel
 
     void processInput() // Sbus input
     {
@@ -56,87 +36,29 @@ class RCTransmitter: public Controller {
 
           droid->drive.setDriveSpeed(channels[2]); // inputs from right joystick pitch for body drive forward/reverse
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
-          droid->drive.setTilt(channels[3]); // inputs from right joystick roll for drive lean         
-        }
-        // else
-        // {
-        //   droid->dome.setDomePosition(0);
-        //   droid->dome.setDomeXY(PITCH_CENTER, ROLL_CENTER);
+          droid->drive.setTilt(channels[3]); // inputs from right joystick roll for drive lean
 
-        //   droid->drive.setDriveSpeed(0);
-        //   droid->drive.setFlywheelSpeed(0);
-        //   droid->drive.setTilt(LEAN_CENTER);
-        // }
-    
+          droid->sfx.playFile(channels[6]); // play sounds from DFplayer Mini
+          droid->sfx.soundType(channels[9]); // choose sound type from 3 different positions
+          //droid->sfx.adjustVolume(channels[10]); // adjust volume from 3 different positions  
+        }
+
         if(channels[8] <= 175)
         {
           droid->drive.setEnable(true);
+          droid->dome.setEnable(true);
+        }
+        else if(channels[8] >= 1800)
+        {
+          droid->drive.setEnable(false);
+          droid->dome.setEnable(false);
         }
         else
         {
           droid->drive.setEnable(false);
-        }
-
-        // if(channels[11] >= 1750) // if flip switch is clicked
-        //   {
-        //       // All possible mood types if switch 1/2 is forward, center or back
-        //     if(channels[10] <= 180)
-        //     {
-        //       droid->sfx.playTrack(1, 7, true);
-        //     } 
-        //     else if(channels[10] <= 1000 && channels[10] >= 985)
-        //     {
-        //       droid->sfx.playTrack(8, 15, true);
-        //     }
-        //     else //if(channels[9] >= 1800)
-        //     {
-        //       droid->sfx.playTrack(16, 24, true);
-        //     }
-        //   } 
-
-        // if(channels[9] <= 175)
-        // {
-        //   droid->sfx.volUp(30);
-        // }
-        // else if(channels[9] >= 1750)
-        // {
-        //   droid->sfx.volDown(20);
-        // }
-        // else
-        // {
-        //   //droid->sfx.volDown(10);
-        // }
-        
-
-          
+          droid->drive.setEnable(true);
+        }         
     }
-
-    // void processInput()
-    // {
-    //     domePitch = pulseIn(5, HIGH, 25000);
-    //     domeRoll = pulseIn(6, HIGH, 25000);
-    //     domeSpin = pulseIn(7, HIGH, 25000);
-    //     drive = pulseIn(8, HIGH, 25000);
-    //     lean = pulseIn(9, HIGH, 25000);
-    //     flywheel = pulseIn(10, HIGH, 25000);
-    //     START = pulseIn(11, HIGH, 25000);
-
-    //     //droid->dome.setDomePosition(domeSpin); // inputs left joystick potentionmeter data for dome spin
-    //     droid->dome.setDomeXY(domePitch, domeRoll); // inputs from left joystick pitch and roll for dome pitch and roll
-
-    //     droid->drive.setDriveSpeed(drive); // inputs from right joystick pitch for body dr ive forward/reverse
-    //     droid->drive.setTilt(lean); // inputs from right joystick roll for drive lean
-
-    //     if(START < 990)
-    //     {
-    //       droid->drive.setEnable(true);
-    //     }
-    //     else
-    //     {
-    //       droid->drive.setEnable(false);
-    //     }
-        
-    // }
 
     #ifdef DOME_TILT_PITCH_CENTER
         int16_t PITCH_CENTER = DOME_TILT_PITCH_CENTER;
@@ -146,7 +68,6 @@ class RCTransmitter: public Controller {
     #endif
     #ifdef DRIVE_LEAN_CENTER
         int16_t LEAN_CENTER = DRIVE_LEAN_CENTER;
-    #endif
-    
+    #endif  
 };
 #endif // RCTransmitter_H_

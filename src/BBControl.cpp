@@ -24,16 +24,18 @@ void setup()
     // add &droid.imu, as second parameter once fixed
     droid.drive.setup(
         &droid.dome,
+        &droid.imu,
         DRIVE_LEAN_SERVO_PIN
     );
 
-    //droid.sfx.setup();
+    droid.sfx.setup();
 
     controller->setup(&droid);
 
     Serial.begin(115200);
     Serial1.begin(9600);
-    Serial2.begin(38400);
+    Serial2.begin(9600);
+    Serial3.begin(9600);
 
     //Log.notice(F("BB8 Drive Ready...\n"));
 }

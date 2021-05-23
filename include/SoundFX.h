@@ -20,14 +20,14 @@ class SoundFX {
     /**
     * Sets up the soundFX class.
     */
-    void setup(
-        uint8_t sfx_fade_pin = _SFX_FADE_PIN
-      ) {
-      mp3Timout(); // check if DFplayer is properly connected
+   // add uint8_t sfx_fade_pin = _SFX_FADE_PIN to parameters
+    void setup() {
+      //mp3Timout(); // check if DFplayer is properly connected
 
       // this->sfx_fade_pin = sfx_fade_pin;
       // pinMode(this->sfx_fade_pin, INPUT);
 
+      myDFPlayer.begin(Serial3);
       myDFPlayer.volume(30);
     }
 
@@ -42,13 +42,13 @@ class SoundFX {
       }
     }
 
-    void playFile(uint16_t isPlaying, boolean psiEnabled) {
-      if(isPlaying > (oldIsPlaying + 1000))
+    void playFile(uint16_t isPlaying) {
+      if(isPlaying > oldIsPlaying + 1000)
       {
         this->myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
-        this->psi_enabled = psiEnabled;
+        this->psi_enabled = true;
       }
-      else if(isPlaying < (oldIsPlaying - 1000))
+      else if(isPlaying < oldIsPlaying - 1000)
       {
         oldIsPlaying = isPlaying;
       }
@@ -131,16 +131,6 @@ class SoundFX {
         analogRead(this->sfx_fade_pin) * 10,
         0, 255);
     }
-
-    // void reset() {
-    //   digitalWrite(this->sfx_reset_pin, LOW);
-    //   pinMode(this->sfx_reset_pin, OUTPUT);
-    //   //delay(10);
-    //   pinMode(this->sfx_reset_pin, INPUT);
-    //   // commenting out for now, Adafruit gives this as an example, but I do
-    //   // not think we need it.
-    //   // delay(1000); // give a bit of time to 'boot up'
-    // }
 };
 
 #endif //SFX_H_

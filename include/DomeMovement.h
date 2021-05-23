@@ -92,8 +92,16 @@ class DomeMovement {
         void move()
         {   
             // USE MAPPED PITCH & ROLL VALUES 
-            pwm.setPWM(domePitchPin, 0, targetPitch);
-            pwm.setPWM(domeRollPin, 0, targetRoll);
+            if(enabled == true)
+            {
+                pwm.setPWM(domePitchPin, 0, targetPitch);
+                pwm.setPWM(domeRollPin, 0, targetRoll);
+            }
+            else
+            {
+                //do nothing
+            }
+            
 
             //pitchServo.easeTo(targetPitch);
 
@@ -129,6 +137,10 @@ class DomeMovement {
             //Serial.println(receivedSpin);
         }
 
+    void setEnable(bool enabled) {
+            this->enabled = enabled;
+        }
+
 
     private:
         unsigned long previousMillis = 0; // used to determine if loop should run
@@ -152,6 +164,8 @@ class DomeMovement {
         int16_t targetRoll = 0;
         int16_t targetSpin = 0;
         int16_t domeSpinPotPos = 0;
+
+        bool enabled = false;
 
         #ifdef DEBUG_DOME_MOVEMENT
             int count = 0;
