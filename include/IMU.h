@@ -20,7 +20,9 @@ class IMU {
         * Setup the class.
         */
 
-       void setup() {}
+       void setup() {
+           bno.begin();
+       }
 
        /**
         * Recieves the data from the IMU
@@ -32,7 +34,7 @@ class IMU {
                 bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
                 y_orientation = printEvent(&orientationData);
            }
-           IMUtimeout();
+           
        }
 
         double printEvent(sensors_event_t* event) {

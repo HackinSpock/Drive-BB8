@@ -43,14 +43,20 @@ class SoundFX {
     }
 
     void playFile(uint16_t isPlaying) {
-      if(isPlaying > oldIsPlaying + 1000)
+      // if(isPlaying > oldIsPlaying + 1000)
+      // {
+      //   this->myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
+      //   this->psi_enabled = true;
+      // }
+      // else if(isPlaying < oldIsPlaying - 1000)
+      // {
+      //   oldIsPlaying = isPlaying;
+      // }
+      if(isPlaying >= 1800 && millis() - lastrun > debounce_time)
       {
         this->myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
         this->psi_enabled = true;
-      }
-      else if(isPlaying < oldIsPlaying - 1000)
-      {
-        oldIsPlaying = isPlaying;
+        lastrun = millis();
       }
     }
 
@@ -109,6 +115,8 @@ class SoundFX {
     uint16_t trackMin;
     uint16_t trackMax;
     uint16_t oldIsPlaying;
+    unsigned long lastrun;
+    int debounce_time = 500;
 
     void psiActivity() {
       if ((millis() - this->lastSound) < 500 && this->psi_enabled) {

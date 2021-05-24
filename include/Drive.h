@@ -152,7 +152,7 @@ class Drive {
 
             bool enabled = false;
 
-            float kP = 3;
+            float kP = 2;
             float kI = 0;
             float kD = 0;
 

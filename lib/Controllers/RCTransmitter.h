@@ -38,9 +38,9 @@ class RCTransmitter: public Controller {
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
           droid->drive.setTilt(channels[3]); // inputs from right joystick roll for drive lean
 
-          droid->sfx.playFile(channels[6]); // play sounds from DFplayer Mini
-          droid->sfx.soundType(channels[9]); // choose sound type from 3 different positions
-          //droid->sfx.adjustVolume(channels[10]); // adjust volume from 3 different positions  
+          // droid->sfx.playFile(channels[6]); // play sounds from DFplayer Mini
+          // droid->sfx.soundType(channels[9]); // choose sound type from 3 different positions
+          // droid->sfx.adjustVolume(channels[10]); // adjust volume from 3 different positions  
         }
 
         if(channels[8] <= 175)

@@ -21,7 +21,7 @@
 
 //Pitch position values
 #define DOME_TILT_PITCH_FRONT 2350
-#define DOME_TILT_PITCH_CENTER 2200
+#define DOME_TILT_PITCH_CENTER 2000
 #define DOME_TILT_PITCH_BACK 1300
 
 //Roll position values
@@ -41,7 +41,7 @@
 #define FLYWHEEL_NUM 2
 #define DRIVE_LEAN_SERVO_PIN 7
 #define DRIVE_LEAN_LEFT 1800
-#define DRIVE_LEAN_CENTER 2000
+#define DRIVE_LEAN_CENTER 2300
 #define DRIVE_LEAN_RIGHT 2600
 
 /**
