@@ -51,11 +51,13 @@ class DomeMovement {
 
         void setDomeXY(int16_t pitch, int16_t roll) 
         {   
-            targetPitch = constrain(pitch, PITCH_BACK, PITCH_FRONT);
-            targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
+            // targetPitch = constrain(pitch, PITCH_BACK, PITCH_FRONT);
+            // targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
+            targetPitch = map(pitch, 172, 1811, PITCH_BACK, PITCH_FRONT);
+            targetRoll = map(roll, 172, 1811, ROLL_LEFT, ROLL_RIGHT);
 
-            pitchEase = MovementUtils::ease(pitch, targetPitch, 10);
-            rollEase = MovementUtils::ease(roll, targetPitch, 10);      
+            //pitchEase = MovementUtils::ease(pitch, targetPitch, 5);
+            //rollEase = MovementUtils::ease(roll, targetPitch, 5);      
         }
 
         void setDomePosition(int16_t x)
@@ -71,8 +73,8 @@ class DomeMovement {
         {   
             if(enabled == true)
             {
-                pwm.setPWM(domePitchPin, 0, pitchEase);
-                pwm.setPWM(domeRollPin, 0, rollEase);
+                pwm.setPWM(domePitchPin, 0, targetPitch);
+                pwm.setPWM(domeRollPin, 0, targetRoll);
             }
         }
 

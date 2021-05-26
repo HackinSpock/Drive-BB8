@@ -36,15 +36,17 @@ class Drive {
         
         void setDriveSpeed(int16_t speed) 
         {   
-            targetDriveSpeed = constrain(speed, -127, 127);
+            //targetDriveSpeed = constrain(speed, -127, 127);
+            targetDriveSpeed = map(speed, 172, 1811, -127, 127);
             //targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
-            driveEase = MovementUtils::ease(speed, targetDriveSpeed, 10);
+            //driveEase = MovementUtils::ease(speed, targetDriveSpeed, 5);
         }
 
         void setFlywheelSpeed(int16_t speed) 
         {   
-            targetFlywheelSpeed = constrain(speed, -127, 127);
-            flywheelEase = MovementUtils::ease(speed, targetFlywheelSpeed, 10);
+            //targetFlywheelSpeed = constrain(speed, -127, 127);
+            targetFlywheelSpeed = map(speed, 172, 1811, -127, 127);
+            //flywheelEase = MovementUtils::ease(speed, targetFlywheelSpeed, 5);
         }
 
         void setTilt(int16_t x) 
@@ -70,7 +72,7 @@ class Drive {
         {   
             //float torque = drivePID(targetDriveSpeed);
             //torque = constrain(torque, -127, 127);
-            int16_t torque = driveEase;
+            int16_t torque = targetDriveSpeed;
 
             if(enabled == true)
             {
@@ -91,7 +93,7 @@ class Drive {
         {
             if(enabled == true)
             {
-                if(flywheelEase > -10 && flywheelEase < 10){
+                if(targetFlywheelSpeed > -10 && targetFlywheelSpeed < 10){
                     ST.motor(2, 0);
                 }
                 else {

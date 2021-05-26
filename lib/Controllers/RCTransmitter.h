@@ -33,13 +33,13 @@ class RCTransmitter: public Controller {
           droid->dome.setDomePosition(channels[4]); // inputs left joystick potentionmeter data for dome spin
           droid->dome.setDomeXY(channels[0], channels[1]); // inputs from left joystick pitch and roll for dome pitch and roll
 
-          droid->drive.setDriveSpeed(map_drive_inputs(channels[2])); // inputs from right joystick pitch for body drive forward/reverse
+          droid->drive.setDriveSpeed(channels[2]); // inputs from right joystick pitch for body drive forward/reverse
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
           droid->drive.setTilt(channels[3]); // inputs from right joystick roll for drive lean
 
-          // droid->sfx.playFile(channels[6]); // play sounds from DFplayer Mini
-          // droid->sfx.soundType(channels[9]); // choose sound type from 3 different positions
-          // droid->sfx.adjustVolume(channels[10]); // adjust volume from 3 different positions  
+          //droid->sfx.playFile(channels[6]); // play sounds from DFplayer Mini
+          //droid->sfx.soundType(channels[9]); // choose sound type from 3 different positions
+          //droid->sfx.adjustVolume(channels[10]); // adjust volume from 3 different positions  
         }
 
         if(channels[8] <= 175)
@@ -54,8 +54,8 @@ class RCTransmitter: public Controller {
         }
         else
         {
-          droid->drive.setEnable(false);
           droid->drive.setEnable(true);
+          droid->dome.setEnable(false);
         }         
     }
 
