@@ -5,7 +5,6 @@
 #include <ArduinoLog.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
-//#include "ServoEasing.h"
 
 #define DOME_TASK_INTERVAL 25 // in millis
 
@@ -28,26 +27,12 @@ class DomeMovement {
            this->domeSpinPin = domeSpinPin;
            this->domeSpinPotPin = domeSpinPotPin;
 
-           //Wire.begin(); // Starts with 100 kHz. Clock will eventually be increased at first attach() except for ESP32.
-           //Wire.beginTransmission(PCA9685_DEFAULT_ADDRESS);
-
-           //pitchServo.attach(domePitchPin);
-           //rollServo.attach(domeRollPin);
-
-           //pitchServo.setSpeed(180); // set servo speed to 180 degrees per second
-           //rollServo.setSpeed(180);
-
             pwm.begin(); // Enable pwm board
             pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
             
             // center dome (X,Y)
             pwm.setPWM(this->domePitchPin, 0, PITCH_CENTER);
-            pwm.setPWM(this->domeRollPin, 0, ROLL_CENTER);
-            //pitchServo.write(0); // Move to center with 30 degree per second using interrupts
-            //rollServo.write(0);
-            //delay(1000); // Wait for servos to reach start position
-            
-            // center dome spin servo        
+            pwm.setPWM(this->domeRollPin, 0, ROLL_CENTER);   
        }
 
        /**
@@ -55,12 +40,9 @@ class DomeMovement {
         */
        void task() 
        {   
-           unsigned long currentMillis = millis();
-           if(currentMillis - previousMillis >= DOME_TASK_INTERVAL) {
-                previousMillis = currentMillis;
-
+           if(millis() >= nextMillis) {
+                nextMillis = millis() + DOME_TASK_INTERVAL;
                 //domeSpinPotPos = analogRead(domeSpinPotPin);
-
                 move();
                 //spin();
            }
@@ -68,21 +50,13 @@ class DomeMovement {
 
         void setDomeXY(int16_t pitch, int16_t roll) 
         {   
-            //this->receivedPitch = pitch; // Look at raw pitch value for testing
-            //this->receivedRoll = roll; // Look at raw roll value for testing
-
-            int pitchRange = map(pitch, 172, 1811, 988, 2012);
-            int rollRange = map(roll, 172, 1811, 988, 2012);
-            
-            targetPitch = map(pitchRange, 988, 2012, PITCH_BACK, PITCH_FRONT);
-            targetRoll = map(rollRange, 988, 2012, ROLL_LEFT, ROLL_RIGHT);
-            
+            targetPitch = map(pitch, 172, 1811, PITCH_BACK, PITCH_FRONT);
+            targetRoll = map(roll, 172, 1811, ROLL_LEFT, ROLL_RIGHT);    
         }
 
         void setDomePosition(int16_t x)
         {   
-            int spinRange = map(x, 172, 1811, 988, 2012);
-            targetSpin = map(spinRange, 988, 2012, 2200, 800); // Map input range from min and max to -180 and 180 (Clockwise and counter)
+            targetSpin = map(x, 172, 1811, 600, 2400); // Map input range from min and max to -180 and 180 (Clockwise and counter)
         }
 
         float getDomeSpinPosition() {
@@ -91,65 +65,32 @@ class DomeMovement {
 
         void move()
         {   
-            // USE MAPPED PITCH & ROLL VALUES 
             if(enabled == true)
             {
                 pwm.setPWM(domePitchPin, 0, targetPitch);
                 pwm.setPWM(domeRollPin, 0, targetRoll);
             }
-            else
-            {
-                //do nothing
-            }
-            
-
-            //pitchServo.easeTo(targetPitch);
-
-            // VIEW MAPPED PITCH & ROLL VALUES
-            //Serial.println(this->targetPitch);
-            //Serial.println(this->targetRoll); 
-
-            // VIEW RAW PITCH & ROLL VALUES
-            //Serial.println(receivedPitch);
-            //Serial.println(receivedRoll);
-            //delay(15);
         }
 
         void spin()
         {   
-            if(targetSpin < 1520 && targetSpin > 1485)
+            if(targetSpin < 1600 && targetSpin > 1400)
             {
-                //pwm.setPWM(domeSpinPin, 0, 1500);
+                pwm.writeMicroseconds(domeSpinPin, 1500);
             }
             else
             {
-                pwm.setPWM(domeSpinPin, 0, this->targetSpin);
+                pwm.writeMicroseconds(domeSpinPin, targetSpin);
             }
-            // else
-            // {
-            //     pwm.setPWM(domeSpinPin, this->targetSpin, 0);
-            // }
-            
-            // VIEW MAPPED SPIN VALUE
-            //Serial.println(this->targetSpin);
-
-            // VIEW RAW SPIN VALUE
-            //Serial.println(receivedSpin);
         }
 
-    void setEnable(bool enabled) {
+        void setEnable(bool enabled) {
             this->enabled = enabled;
         }
 
 
     private:
-        unsigned long previousMillis = 0; // used to determine if loop should run
-
-        //ServoEasing pitchServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
-        //ServoEasing rollServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
-        //ServoEasing spinServo = ServoEasing(PCA9685_DEFAULT_ADDRESS, &Wire);
-
-        //uint8_t deadzone = 10;
+        unsigned long nextMillis = 0;
 
         uint8_t receivedPitch;
         uint8_t receivedRoll;
