@@ -5,6 +5,7 @@
 #include <ArduinoLog.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <MovementUtils.h>
 
 #define DOME_TASK_INTERVAL 25 // in millis
 
@@ -50,8 +51,11 @@ class DomeMovement {
 
         void setDomeXY(int16_t pitch, int16_t roll) 
         {   
-            targetPitch = map(pitch, 172, 1811, PITCH_BACK, PITCH_FRONT);
-            targetRoll = map(roll, 172, 1811, ROLL_LEFT, ROLL_RIGHT);    
+            targetPitch = constrain(pitch, PITCH_BACK, PITCH_FRONT);
+            targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
+
+            pitchEase = MovementUtils::ease(pitch, targetPitch, 10);
+            rollEase = MovementUtils::ease(roll, targetPitch, 10);      
         }
 
         void setDomePosition(int16_t x)
@@ -67,8 +71,8 @@ class DomeMovement {
         {   
             if(enabled == true)
             {
-                pwm.setPWM(domePitchPin, 0, targetPitch);
-                pwm.setPWM(domeRollPin, 0, targetRoll);
+                pwm.setPWM(domePitchPin, 0, pitchEase);
+                pwm.setPWM(domeRollPin, 0, rollEase);
             }
         }
 
@@ -105,6 +109,9 @@ class DomeMovement {
         int16_t targetRoll = 0;
         int16_t targetSpin = 0;
         int16_t domeSpinPotPos = 0;
+
+        uint16_t pitchEase;
+        uint16_t rollEase;
 
         bool enabled = false;
 

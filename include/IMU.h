@@ -2,7 +2,6 @@
 #define IMU_H_
 
 #include <Arduino.h>
-#include "EasyTransfer.h"
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
@@ -11,30 +10,24 @@
 
 //#define DEBUG_IMU
 
+#define _IMU_TASK_INTERVAL 10
+
 class IMU {
     public:
         IMU() {}
         ~IMU() {;}
 
-        /**
-        * Setup the class.
-        */
-
        void setup() {
-           bno.begin();
+           is_imuInit = bno.begin();
        }
 
-       /**
-        * Recieves the data from the IMU
-        */
-
        void task(){
-           if((millis() - lastRecievedMillis) >= 10){
+           if(millis() >= nextMillis) {
+                nextMillis = millis() + _IMU_TASK_INTERVAL;
                 sensors_event_t orientationData; 
                 bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
                 y_orientation = printEvent(&orientationData);
-           }
-           
+           }         
        }
 
         double printEvent(sensors_event_t* event) {
@@ -56,21 +49,13 @@ class IMU {
         {
             return y_orientation;
         }
-       
-        void IMUtimeout() {
-            if(!bno.begin())
-            {
-                /* There was a problem detecting the BNO055 ... check your connections */
-                //Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-                while(1);
-            }
-        }
 
     private:
-        unsigned long lastRecievedMillis;
+        unsigned long nextMillis;
         Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 
         float y_orientation;
+        boolean is_imuInit = false;
 };
 
 #endif //IMU_H_

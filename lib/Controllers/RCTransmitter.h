@@ -11,6 +11,7 @@ class RCTransmitter: public Controller {
   public:
     void setup(Droid* droid) override {
         this->droid = droid;
+        x8r.begin();
     }
 
     void task() override {
@@ -27,14 +28,12 @@ class RCTransmitter: public Controller {
 
     void processInput() // Sbus input
     {
-        x8r.begin();
-
         if(x8r.read(&channels[0], &failSafe, &lostFrame)) 
         {
           droid->dome.setDomePosition(channels[4]); // inputs left joystick potentionmeter data for dome spin
           droid->dome.setDomeXY(channels[0], channels[1]); // inputs from left joystick pitch and roll for dome pitch and roll
 
-          droid->drive.setDriveSpeed(channels[2]); // inputs from right joystick pitch for body drive forward/reverse
+          droid->drive.setDriveSpeed(map_drive_inputs(channels[2])); // inputs from right joystick pitch for body drive forward/reverse
           droid->drive.setFlywheelSpeed(channels[5]); // inputs from right joystick potentiemter for flywheel spin
           droid->drive.setTilt(channels[3]); // inputs from right joystick roll for drive lean
 
@@ -59,6 +58,31 @@ class RCTransmitter: public Controller {
           droid->drive.setEnable(true);
         }         
     }
+
+    int16_t map_drive_inputs(int16_t input) {
+            int8_t x = 0;
+                if (input > 1000) {
+                    x = map(input, 1000, 1811, 0, 127);
+                }
+                else if(input < 980)
+                {
+                  x = map(input, 172, 980, -127, 0);
+                }
+                
+            return x;
+        }
+
+    int16_t map_servo_inputs(int16_t input, int16_t dead_zone) {
+            int8_t x = 0;
+                if  (input > 1005) {
+                    x = map(input, 1005, 1811, 1475, 1811);
+                }
+                else if(input < 975)
+                {
+                  x = map(input, 172, 975, 544, 1475);
+                }           
+            return x;
+        }    
 
     #ifdef DOME_TILT_PITCH_CENTER
         int16_t PITCH_CENTER = DOME_TILT_PITCH_CENTER;

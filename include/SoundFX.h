@@ -22,8 +22,6 @@ class SoundFX {
     */
    // add uint8_t sfx_fade_pin = _SFX_FADE_PIN to parameters
     void setup() {
-      //mp3Timout(); // check if DFplayer is properly connected
-
       // this->sfx_fade_pin = sfx_fade_pin;
       // pinMode(this->sfx_fade_pin, INPUT);
 
@@ -35,27 +33,18 @@ class SoundFX {
     * Work.  Run this repeatidly in the main loop.
     */
     void task() {
-      unsigned long currentMillis = millis();
-      if (currentMillis - this->previousMillis >= _SFX_TASK_INTERVAL) {
-        this->previousMillis = currentMillis;
+      if(millis() >= nextMillis) {
+        nextMillis = millis() + _SFX_TASK_INTERVAL;
         //this->psiActivity();
       }
     }
 
     void playFile(uint16_t isPlaying) {
-      // if(isPlaying > oldIsPlaying + 1000)
-      // {
-      //   this->myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
-      //   this->psi_enabled = true;
-      // }
-      // else if(isPlaying < oldIsPlaying - 1000)
-      // {
-      //   oldIsPlaying = isPlaying;
-      // }
       if(isPlaying >= 1800 && millis() - lastrun > debounce_time)
       {
-        this->myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
-        this->psi_enabled = true;
+        myDFPlayer.play(random(this->trackMin, this->trackMax)); // play track between min and max values
+        //Serial.println("Sound played");
+        psi_enabled = true;
         lastrun = millis();
       }
     }
@@ -64,18 +53,18 @@ class SoundFX {
     {
       if(type <= 180)
       {
-        this->trackMin = 1;
-        this->trackMax = 7;
+        trackMin = 1;
+        trackMax = 7;
       } 
       else if(type <= 1000 && type >= 985)
       {
-        this->trackMin = 8;
-        this->trackMax = 15;
+        trackMin = 8;
+        trackMax = 15;
       }
       else //if(type >= 1800)
       {
-        this->trackMin = 16;
-        this->trackMax = 24;
+        trackMin = 16;
+        trackMax = 24;
       }
     }
 
@@ -94,17 +83,8 @@ class SoundFX {
       }
     }
 
-    void mp3Timout()
-    {
-      if (!myDFPlayer.begin(Serial3)) {  //Use hardwareserial to communicate with mp3.
-        while(true){
-          //delay
-        }
-      }
-    }
-
   private:
-    unsigned long previousMillis = 0; // used to determine if loop should run
+    unsigned long nextMillis = 0; // used to determine if loop should run
     unsigned long lastSound = 0;
 
     DFRobotDFPlayerMini myDFPlayer = DFRobotDFPlayerMini();
@@ -112,11 +92,13 @@ class SoundFX {
     bool psi_enabled = false; 
 
     uint8_t psi_level = 0;
+    
     uint16_t trackMin;
     uint16_t trackMax;
     uint16_t oldIsPlaying;
+    uint16_t debounce_time = 500;
     unsigned long lastrun;
-    int debounce_time = 500;
+
 
     void psiActivity() {
       if ((millis() - this->lastSound) < 500 && this->psi_enabled) {

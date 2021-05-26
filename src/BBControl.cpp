@@ -22,13 +22,14 @@ void setup()
     );
 
     // add &droid.imu, as second parameter once fixed
+
+    droid.imu.setup();
+
     droid.drive.setup(
         &droid.dome,
         &droid.imu,
         DRIVE_LEAN_SERVO_PIN
     );
-
-    droid.imu.setup();
 
     //droid.sfx.setup();
 

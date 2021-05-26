@@ -10,6 +10,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <DomeMovement.h>
+#include <MovementUtils.h>
 
 //#define DEBUG_DRIVE_MOVEMENT
 
@@ -29,40 +30,32 @@ class Drive {
             // lean
             this->leanServoPin = leanServoPin;
 
-            imu->IMUtimeout();
-            dome->pwm.begin(); // Enable pwm board
-            dome->pwm.setPWMFreq(300);  // Analog servos run at ~50 Hz updates, digital at ~300Hz updates.
-
             //center lean
             dome->pwm.setPWM(this->leanServoPin, 0, LEAN_CENTER);
-            //delay(1000); // wait for adjustment
         }
         
         void setDriveSpeed(int16_t speed) 
         {   
-            //this->rawSpeed = speed;
-            int driveRange = map(speed, 172, 1811, 988, 2012);
-            //targetDriveSpeed = map(driveRange, 988, 2012, -127, 127);
-            targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
+            targetDriveSpeed = constrain(speed, -127, 127);
+            //targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
+            driveEase = MovementUtils::ease(speed, targetDriveSpeed, 10);
         }
 
         void setFlywheelSpeed(int16_t speed) 
         {   
-            int flywheelRange = map(speed, 172, 1811, 988, 2012);
-            this->targetFlywheelSpeed = map(flywheelRange, 988, 2012, -127, 127);
+            targetFlywheelSpeed = constrain(speed, -127, 127);
+            flywheelEase = MovementUtils::ease(speed, targetFlywheelSpeed, 10);
         }
 
         void setTilt(int16_t x) 
         {   
-            //this->rawLean = x;
-            int tiltRange = map(x, 172, 1811, 988, 2012);
-            this->targetLean = map(tiltRange, 988, 2012, LEAN_LEFT, LEAN_RIGHT);
+            this->targetLean = map(x, 172, 1811, LEAN_LEFT, LEAN_RIGHT);
         }
 
         void task() // Main loop
         {
-            unsigned long currentMillis = millis();
-            if (currentMillis - previousMillis >= _DRIVE_TASK_INTERVAL) {
+            if(millis() >= nextMillis) {
+                nextMillis = millis() + _DRIVE_TASK_INTERVAL;
                 drive();
                 tilt();
                 flywheel();
@@ -75,9 +68,9 @@ class Drive {
 
         void drive() // Drives the BB unit FWD and Reverse
         {   
-            float torque = drivePID(targetDriveSpeed);
-            torque = constrain(torque, -127, 127);
-            //uint16_t torque = targetDriveSpeed;
+            //float torque = drivePID(targetDriveSpeed);
+            //torque = constrain(torque, -127, 127);
+            int16_t torque = driveEase;
 
             if(enabled == true)
             {
@@ -92,14 +85,13 @@ class Drive {
             {
                 ST.motor(1, 0);
             }
-            //delay(100);
 
         }
         void flywheel()  // Drives BB8 flywheel with pot
         {
             if(enabled == true)
             {
-                if(targetFlywheelSpeed > -10 && targetFlywheelSpeed < 10){
+                if(flywheelEase > -10 && flywheelEase < 10){
                     ST.motor(2, 0);
                 }
                 else {
@@ -110,19 +102,11 @@ class Drive {
             {
                 ST.motor(2, 0);
             }
-            //delay(100);
         }
 
         void tilt() // drive body roll servo
         { 
-            dome->pwm.setPWM(this->leanServoPin, 0, targetLean);
-
-            // VIEW MAPPED PITCH & ROLL VALUES
-            //Serial.println(this->targetLean);
-
-            // VIEW RAW PITCH & ROLL VALUES
-            //Serial.println(rawLean);
-            //delay(15);
+            dome->pwm.setPWM(leanServoPin, 0, targetLean);
         }
 
         float drivePID(int16_t throttleAngle)
@@ -138,7 +122,7 @@ class Drive {
         }
 
         private:
-            unsigned long previousMillis = 0; // Used to determine if loop should run
+            unsigned long nextMillis = 0;
             uint8_t leanServoPin;
 
             int16_t targetDriveSpeed = 0;
@@ -148,11 +132,14 @@ class Drive {
             IMU* imu;
             DomeMovement* dome;
             
-            Sabertooth ST = Sabertooth(128, Serial1); // Address 128, and use SWSerial as the serial port.
+            Sabertooth ST = Sabertooth(128, Serial1); // Address 128, and use HardwareSerial as the serial port.
+
+            int16_t driveEase;
+            int16_t flywheelEase;
 
             bool enabled = false;
 
-            float kP = 2;
+            float kP = 0;
             float kI = 0;
             float kD = 0;
 
