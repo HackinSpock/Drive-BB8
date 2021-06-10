@@ -7,7 +7,7 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <MovementUtils.h>
 
-#define DOME_TASK_INTERVAL 25 // in millis
+#define DOME_TASK_INTERVAL 20 // in millis
 
 //#define DEBUG_DOME_MOVEMENT
 
@@ -53,11 +53,11 @@ class DomeMovement {
         {   
             // targetPitch = constrain(pitch, PITCH_BACK, PITCH_FRONT);
             // targetRoll = constrain(roll, ROLL_LEFT, ROLL_RIGHT);
-            targetPitch = map(pitch, 172, 1811, PITCH_BACK, PITCH_FRONT);
+            targetPitch = map(pitch, 172, 1811, PITCH_FRONT, PITCH_BACK);
             targetRoll = map(roll, 172, 1811, ROLL_LEFT, ROLL_RIGHT);
 
-            //pitchEase = MovementUtils::ease(pitch, targetPitch, 5);
-            //rollEase = MovementUtils::ease(roll, targetPitch, 5);      
+            currentPitch = MovementUtils::ease(currentPitch, targetPitch, 20);
+            currentRoll = MovementUtils::ease(currentRoll, targetRoll, 24);      
         }
 
         void setDomePosition(int16_t x)
@@ -73,8 +73,8 @@ class DomeMovement {
         {   
             if(enabled == true)
             {
-                pwm.setPWM(domePitchPin, 0, targetPitch);
-                pwm.setPWM(domeRollPin, 0, targetRoll);
+                pwm.setPWM(domePitchPin, 0, currentPitch);
+                pwm.setPWM(domeRollPin, 0, currentRoll);
             }
         }
 
@@ -107,13 +107,12 @@ class DomeMovement {
         uint8_t domeSpinPin;
         uint8_t domeSpinPotPin;
 
+        int16_t currentPitch = 1822;
+        int16_t currentRoll = 1900;
         int16_t targetPitch = 0;
         int16_t targetRoll = 0;
         int16_t targetSpin = 0;
         int16_t domeSpinPotPos = 0;
-
-        uint16_t pitchEase;
-        uint16_t rollEase;
 
         bool enabled = false;
 

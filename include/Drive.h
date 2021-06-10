@@ -39,19 +39,20 @@ class Drive {
             //targetDriveSpeed = constrain(speed, -127, 127);
             targetDriveSpeed = map(speed, 172, 1811, -127, 127);
             //targetDriveSpeed = map(driveRange, 988, 2012, -25, 25);
-            //driveEase = MovementUtils::ease(speed, targetDriveSpeed, 5);
+            currentDriveSpeed = MovementUtils::ease(currentDriveSpeed, targetDriveSpeed, 10);
         }
 
         void setFlywheelSpeed(int16_t speed) 
         {   
             //targetFlywheelSpeed = constrain(speed, -127, 127);
             targetFlywheelSpeed = map(speed, 172, 1811, -127, 127);
-            //flywheelEase = MovementUtils::ease(speed, targetFlywheelSpeed, 5);
+            currentFlywheelSpeed = MovementUtils::ease(currentFlywheelSpeed, targetFlywheelSpeed, 5);
         }
 
         void setTilt(int16_t x) 
         {   
-            this->targetLean = map(x, 172, 1811, LEAN_LEFT, LEAN_RIGHT);
+            targetLean = map(x, 172, 1811, LEAN_LEFT, LEAN_RIGHT);
+            currentLean = MovementUtils::ease(currentLean, targetLean, 18);
         }
 
         void task() // Main loop
@@ -72,7 +73,7 @@ class Drive {
         {   
             //float torque = drivePID(targetDriveSpeed);
             //torque = constrain(torque, -127, 127);
-            int16_t torque = targetDriveSpeed;
+            int16_t torque = currentDriveSpeed;
 
             if(enabled == true)
             {
@@ -90,14 +91,16 @@ class Drive {
 
         }
         void flywheel()  // Drives BB8 flywheel with pot
-        {
+        {   
+            int16_t torque = currentFlywheelSpeed;
+
             if(enabled == true)
             {
-                if(targetFlywheelSpeed > -10 && targetFlywheelSpeed < 10){
+                if(torque > -10 && torque < 10){
                     ST.motor(2, 0);
                 }
                 else {
-                    ST.motor(2, -targetFlywheelSpeed);
+                    ST.motor(2, -torque);
                 }
             }
             else
@@ -108,7 +111,7 @@ class Drive {
 
         void tilt() // drive body roll servo
         { 
-            dome->pwm.setPWM(leanServoPin, 0, targetLean);
+            dome->pwm.setPWM(leanServoPin, 0, currentLean);
         }
 
         float drivePID(int16_t throttleAngle)
@@ -130,6 +133,10 @@ class Drive {
             int16_t targetDriveSpeed = 0;
             int16_t targetFlywheelSpeed = 0;
             int16_t targetLean = 0;
+
+            int16_t currentDriveSpeed = 0;
+            int16_t currentFlywheelSpeed = 0;
+            int16_t currentLean = 2200;
             
             IMU* imu;
             DomeMovement* dome;
